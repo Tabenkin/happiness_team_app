@@ -17,5 +17,12 @@ class AppRouter extends $AppRouter {
           page: WelcomeRoute.page,
           guards: [AuthGuard()],
         ),
+        AutoRoute(
+          page: SettingsRoute.page,
+          guards: [AuthGuard()],
+        ),
+        AutoRoute(
+          page: PrivacyPolicyRoute.page,
+        ),
       ];
 }

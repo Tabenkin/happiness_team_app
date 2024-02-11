@@ -117,6 +117,7 @@ class WinningWheelState extends State<WinningWheel> {
                     child: _buildAnimatedCircle(
                       widget.circleColors[index],
                       _positionAnimations[index],
+                      widget.circleDepths[index] ?? 1,
                     ),
                   );
                 }).toList(),
@@ -129,7 +130,7 @@ class WinningWheelState extends State<WinningWheel> {
   }
 
   Widget _buildAnimatedCircle(
-      Color color, Animation<Offset> positionAnimation) {
+      Color color, Animation<Offset> positionAnimation, int circleDepth) {
     return LayoutBuilder(builder: (context, constraints) {
       return AnimatedBuilder(
         animation: Listenable.merge([
@@ -228,6 +229,8 @@ class WinningWheelState extends State<WinningWheel> {
             );
           }
 
+          print(circleDepth);
+
           return Transform.translate(
             offset: positionAnimation.value,
             child: Container(
@@ -240,7 +243,7 @@ class WinningWheelState extends State<WinningWheel> {
               child: FloatingActionButton(
                 onPressed: widget.onTriggerAnimation,
                 backgroundColor: color,
-                elevation: winWidget != null ? 1.0 : 0.0,
+                elevation: winWidget != null && circleDepth == 2 ? 1.0 : 0.0,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(borderRadius),
                 ),

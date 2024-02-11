@@ -20,8 +20,8 @@ final ThemeData happinessTheme = ThemeData(
     titleMedium: GoogleFonts.ptSans(
       fontSize: 32.0,
     ),
-    bodyLarge: GoogleFonts.ptSans(fontSize: 24.0, height: 1.1),
-    bodyMedium: GoogleFonts.ptSans(fontSize: 18.0, height: 1.1),
+    bodyLarge: GoogleFonts.ptSans(fontSize: 22.0, height: 1.1),
+    bodyMedium: GoogleFonts.ptSans(fontSize: 16.0, height: 1.1),
   ),
 
   hintColor: const Color(0xFF92949c),

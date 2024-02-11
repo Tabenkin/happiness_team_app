@@ -44,7 +44,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
       _isProcessing = true;
     });
 
-    try {
+try {
       await FirebaseAuth.instance.sendPasswordResetEmail(email: _email);
     } catch (error) {}
 
@@ -60,6 +60,12 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
 
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+        ),
         title: const Text('Reset Password'),
       ),
       body: SingleChildScrollView(

@@ -52,7 +52,8 @@ class _MyTextAreaState extends State<MyTextArea> {
             decoration: const InputDecoration(
               hintText: "Enter text here...",
               border: InputBorder.none, // Removes underline
-              contentPadding: EdgeInsets.symmetric(vertical: 15),
+              contentPadding:
+                  EdgeInsets.symmetric(horizontal: 8.0, vertical: 16.0),
             ),
             style: Theme.of(context).textTheme.bodyMedium,
 

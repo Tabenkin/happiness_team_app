@@ -49,17 +49,18 @@ class _MyTextInputState extends State<MyTextInput> {
             color: Colors.black,
           ),
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: 12),
         TextField(
           controller: _controller,
           keyboardType: widget.keyboardType,
           obscureText: _isObscured,
+          style: Theme.of(context).textTheme.bodyMedium,
           decoration: InputDecoration(
             filled: true,
             fillColor: Theme.of(context).colorScheme.surface,
             hintText: widget.placeholder,
             contentPadding:
-                const EdgeInsets.symmetric(vertical: 15, horizontal: 10),
+                const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(25),
               borderSide: BorderSide(color: Colors.grey.shade300),

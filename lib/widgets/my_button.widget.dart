@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:happiness_team_app/happiness_theme.dart';
 
-enum MyButtonColor { primary, secondary, tertiary, google, apple }
+enum MyButtonColor { primary, secondary, tertiary, error, google, apple }
 
 class MyButton extends StatefulWidget {
   final MyButtonColor color;
@@ -9,6 +9,7 @@ class MyButton extends StatefulWidget {
   final VoidCallback? onTap;
   final bool showSpinner;
   final bool filled;
+  final double textSize;
 
   const MyButton({
     Key? key,
@@ -17,6 +18,7 @@ class MyButton extends StatefulWidget {
     this.onTap,
     this.showSpinner = false,
     this.filled = true, // Default to false if not provided
+    this.textSize = 16, // Default to 16 if not provided
   }) : super(key: key);
 
   @override
@@ -44,6 +46,10 @@ class _MyButtonState extends State<MyButton> {
         backgroundColor = theme.colorScheme.tertiary;
         onPrimaryColor = theme.colorScheme.onTertiary;
         break;
+      case MyButtonColor.error:
+        backgroundColor = theme.colorScheme.error;
+        onPrimaryColor = theme.colorScheme.onError;
+        break;
       case MyButtonColor.google:
         backgroundColor = theme.google;
         onPrimaryColor = theme.onGoogle;
@@ -58,7 +64,8 @@ class _MyButtonState extends State<MyButton> {
     Color textColor = widget.filled ? onPrimaryColor : backgroundColor;
 
     // Set a smaller text size for the text within the button
-    double textSize = 16; // Example text size, you can adjust as needed
+    double textSize =
+        widget.textSize; // Example text size, you can adjust as needed
 
     return DefaultTextStyle(
       style: TextStyle(color: textColor, fontSize: textSize),
@@ -70,10 +77,10 @@ class _MyButtonState extends State<MyButton> {
               ? backgroundColor
               : Colors.transparent, // Use the background color if filled
           borderRadius: BorderRadius.circular(
-              20), // Border radius for the Material widget
+              25), // Border radius for the Material widget
           child: InkWell(
             borderRadius: BorderRadius.circular(
-                20), // Match the border radius for the ripple effect
+                25), // Match the border radius for the ripple effect
             onTap: widget.showSpinner ? null : widget.onTap,
             child: Stack(
               alignment: Alignment.center,
@@ -81,7 +88,7 @@ class _MyButtonState extends State<MyButton> {
                 Padding(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 24,
-                    vertical: 12,
+                    vertical: 16,
                   ), //
                   child: DefaultTextStyle(
                     style: TextStyle(color: textColor, fontSize: textSize),
@@ -95,7 +102,8 @@ class _MyButtonState extends State<MyButton> {
                   Positioned.fill(
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(
-                          20), // Clip overlay to match button shape
+                        25,
+                      ), // Clip overlay to match button shape
                       child: Container(
                         color: Theme.of(context)
                             .colorScheme

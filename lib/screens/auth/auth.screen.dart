@@ -4,6 +4,7 @@ import 'package:auto_route/auto_route.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:happiness_team_app/happiness_theme.dart';
 import 'package:happiness_team_app/models/app_user.model.dart';
 import 'package:happiness_team_app/providers/app.provider.dart';
 import 'package:happiness_team_app/providers/user.provider.dart';
@@ -11,6 +12,7 @@ import 'package:happiness_team_app/router/happiness_router.gr.dart';
 import 'package:happiness_team_app/widgets/apple_signin_button.widget.dart';
 import 'package:happiness_team_app/widgets/google_signin_button.widget.dart';
 import 'package:happiness_team_app/widgets/my_button.widget.dart';
+import 'package:happiness_team_app/widgets/my_text.widget.dart';
 import 'package:happiness_team_app/widgets/my_text_input.widget.dart';
 import 'package:provider/provider.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
@@ -179,6 +181,8 @@ class _AuthScreenState extends State<AuthScreen> {
 
   @override
   Widget build(BuildContext context) {
+    var theme = Theme.of(context);
+
     return Scaffold(
       body: Center(
         child: SingleChildScrollView(
@@ -261,14 +265,20 @@ class _AuthScreenState extends State<AuthScreen> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          MyButton(
-                            onTap: () {
+                          TextButton(
+                            onPressed: () {
                               context.router
                                   .navigate(const ResetPasswordRoute());
                             },
-                            filled: false,
-                            child: const Text(
+                            child: Text(
                               "Forgot Password?",
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyMedium!
+                                  .copyWith(
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .primary),
                             ),
                           ),
                         ],
@@ -293,13 +303,19 @@ class _AuthScreenState extends State<AuthScreen> {
                           const Text(
                             "Don't have an account?",
                           ),
-                          MyButton(
-                            onTap: _toggleAuthState,
-                            filled: false,
+                          TextButton(
+                            onPressed: _toggleAuthState,
                             child: Text(
                               _isLogin ? "Sign Up" : "Sign In",
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyMedium!
+                                  .copyWith(
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .primary),
                             ),
-                          )
+                          ),
                         ],
                       ),
                       const SizedBox(
@@ -356,12 +372,36 @@ class _AuthScreenState extends State<AuthScreen> {
                             ),
                           ],
                         ),
+                      const SizedBox(
+                        height: 16.0,
+                      ),
                       SizedBox(
                         width: double.infinity,
                         child: GoogleSigninButton(
                           label: _isLogin ? "Sign in" : "Sign Up",
                           onSuccess: _onSuccess,
                           onError: _displayError,
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 16.0,
+                      ),
+                      MyButton(
+                        filled: false,
+                        onTap: () {
+                          context.router.push(const PrivacyPolicyRoute());
+                        },
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            MyText(
+                              "Privacy Policy",
+                              textAlign: TextAlign.left,
+                              style: theme.textTheme.bodyMedium!.copyWith(
+                                color: theme.dark,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ],

@@ -71,6 +71,23 @@ class UserProvider with ChangeNotifier {
     });
   }
 
+  Future<void> requestPushNotificationPermissions() async {
+    NotificationSettings settings =
+        await FirebaseMessaging.instance.requestPermission(
+      alert: true,
+      badge: true,
+      provisional: false,
+    );
+
+    if (settings.authorizationStatus == AuthorizationStatus.authorized) {
+      // Get the token each time the application launches
+      String? token = await FirebaseMessaging.instance.getToken();
+      if (token != null) {
+        await assignDeviceToken(token);
+      }
+    }
+  }
+
   Future<void> assignDeviceToken(String token) async {
     var user = _user;
     var deviceId = _deviceId;

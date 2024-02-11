@@ -54,20 +54,7 @@ class _WelcomeInfoPageState extends State<WelcomeInfoPage> {
   }
 
   _requestPushNotificationPermission() async {
-    NotificationSettings settings =
-        await FirebaseMessaging.instance.requestPermission(
-      alert: true,
-      badge: true,
-      provisional: false,
-    );
-
-    if (settings.authorizationStatus == AuthorizationStatus.authorized) {
-      // Get the token each time the application launches
-      String? token = await FirebaseMessaging.instance.getToken();
-      if (token != null) {
-        _userProvider.assignDeviceToken(token);
-      }
-    }
+    _userProvider.requestPushNotificationPermissions();
 
     setState(() {
       _isSaving = false;
@@ -105,7 +92,7 @@ class _WelcomeInfoPageState extends State<WelcomeInfoPage> {
               height: 24.0,
             ),
             MyText(
-              "Welcome to The Happiness Team!",
+              "Welcome to the Happiness Team!",
               style: Theme.of(context).textTheme.headlineLarge,
               textAlign: TextAlign.center,
             ),

@@ -13,6 +13,7 @@ import 'package:happiness_team_app/models/win.model.dart';
 import 'package:happiness_team_app/providers/auth_state.provider.dart';
 import 'package:happiness_team_app/providers/wins.provider.dart';
 import 'package:happiness_team_app/components/win_list/win_card.widget.dart';
+import 'package:happiness_team_app/screens/home/main_drawer.dart';
 import 'package:happiness_team_app/screens/home/win_progress.dart';
 import 'package:happiness_team_app/services/auth.service.dart';
 import 'package:happiness_team_app/widgets/my_animated_add_icon.widget.dart';
@@ -83,7 +84,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   }
 
   Win? _win;
-  Map<int, int> circleDepths = {0: 1, 1: 1, 2: 1, 3: 1};
+  Map<int, int> circleDepths = {0: 2, 1: 1, 2: 1, 3: 1};
 
   _getRandomWin() {
     var wins = Provider.of<WinsProvider>(context, listen: false).wins.value;
@@ -183,6 +184,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       valueListenable: Provider.of<WinsProvider>(context, listen: false).wins,
       builder: (context, wins, child) {
         return Scaffold(
+          drawer: const MainDrawer(),
           floatingActionButton: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -202,6 +204,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 ),
               if (wins.isNotEmpty)
                 FloatingActionButton(
+                  key: GlobalKey(),
                   onPressed: _showCross == true ? _onTriggerAnimation : _addWin,
                   shape: const CircleBorder(),
                   elevation: 1.0,

@@ -499,8 +499,12 @@ class DialogHelper {
     );
   }
 
-  static showSimpleSuccessToast(BuildContext context, String message,
-      {double? width, double? margin}) {
+  static showSimpleSuccessToast(
+    BuildContext context,
+    String message, {
+    double? width,
+    double margin = 16.0,
+  }) {
     var theme = Theme.of(context);
 
     showToastWidget(
