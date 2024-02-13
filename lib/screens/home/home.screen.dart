@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math';
 
 import 'package:auto_route/auto_route.dart';
@@ -13,7 +14,12 @@ import 'package:happiness_team_app/models/win.model.dart';
 import 'package:happiness_team_app/providers/auth_state.provider.dart';
 import 'package:happiness_team_app/providers/wins.provider.dart';
 import 'package:happiness_team_app/components/win_list/win_card.widget.dart';
+import 'package:happiness_team_app/screens/home/grouped_wins_grid.dart';
+import 'package:happiness_team_app/screens/home/grouped_wins_list.widget.dart';
+import 'package:happiness_team_app/screens/home/grouping_header.widget.dart';
+import 'package:happiness_team_app/screens/home/grouping_tabs.widget.dart';
 import 'package:happiness_team_app/screens/home/main_drawer.dart';
+import 'package:happiness_team_app/screens/home/monthly_grouped_wins.dart';
 import 'package:happiness_team_app/screens/home/win_progress.dart';
 import 'package:happiness_team_app/services/auth.service.dart';
 import 'package:happiness_team_app/widgets/my_animated_add_icon.widget.dart';
@@ -21,6 +27,7 @@ import 'package:happiness_team_app/widgets/my_button.widget.dart';
 import 'package:happiness_team_app/widgets/my_text.widget.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:sliver_tools/sliver_tools.dart';
 
 @RoutePage()
 class HomeScreen extends StatefulWidget {
@@ -33,6 +40,10 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
+  late WinsProvider _winsProvider;
+
+  StreamSubscription? _randomWinTriggerSubscription;
+
   void _addWin() {
     _editWin(
       Win(
@@ -45,18 +56,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   }
 
   void _editWin(Win win) {
-    showModalBottomSheet(
-        context: context,
-        isScrollControlled: true,
-        useSafeArea: true,
-        builder: (context) {
-          return ClipRRect(
-            borderRadius: BorderRadius.circular(20),
-            child: WinFormContainer(
-              win: win,
-            ),
-          );
-        });
+    WinsProvider.showWinForm(context, win);
   }
 
   late AnimationController _initialTransformController;
@@ -84,7 +84,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   }
 
   Win? _win;
-  Map<int, int> circleDepths = {0: 2, 1: 1, 2: 1, 3: 1};
+  Map<int, int> circleDepths = {0: 1, 1: 1, 2: 2, 3: 1};
 
   _getRandomWin() {
     var wins = Provider.of<WinsProvider>(context, listen: false).wins.value;
@@ -92,6 +92,28 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       var randomIndex = Random().nextInt(wins.length);
       _win = wins[randomIndex];
     }
+  }
+
+// Assuming this is a class member variable
+  int lastRandomIndex =
+      2; // Initialize with an invalid index to ensure a color is selected the first time
+
+  void updateCircleDepths(Map circleDepths, List circleColors) {
+    int newRandomIndex;
+    Random random = Random();
+
+    // Ensure a new color is chosen each time
+    do {
+      newRandomIndex = random.nextInt(circleColors.length);
+    } while (newRandomIndex == lastRandomIndex);
+
+    // Update the lastRandomIndex with the newRandomIndex
+    lastRandomIndex = newRandomIndex;
+
+    // Assign depth based on the new random index
+    circleDepths.forEach((key, value) {
+      circleDepths[key] = (key == newRandomIndex) ? 2 : 1;
+    });
   }
 
   _forward() {
@@ -106,10 +128,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     _rotationAnimationController.addStatusListener((status) {
       if (status == AnimationStatus.completed) {
         setState(() {
-          int randomIndex = Random().nextInt(circleColors.length);
-          circleDepths.forEach((key, value) {
-            circleDepths[key] = (key == randomIndex) ? 2 : 1;
-          });
+          updateCircleDepths(circleDepths, circleColors);
         });
 
         _rotationAnimationController.reverse();
@@ -167,11 +186,22 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       vsync: this,
     );
 
+    _winsProvider = Provider.of<WinsProvider>(context, listen: false);
+
+    _randomWinTriggerSubscription =
+        _winsProvider.streamRandomWinTriggers.listen((event) {
+      if (event == null) return;
+
+      _onTriggerAnimation();
+      _winsProvider.clearEvents();
+    });
+
     super.initState();
   }
 
   @override
   void dispose() {
+    _randomWinTriggerSubscription?.cancel();
     _initialTransformController.dispose();
     _rotationAnimationController.dispose();
     _finalTransformController.dispose();
@@ -181,7 +211,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return ValueListenableBuilder(
-      valueListenable: Provider.of<WinsProvider>(context, listen: false).wins,
+      valueListenable: _winsProvider.wins,
       builder: (context, wins, child) {
         return Scaffold(
           drawer: const MainDrawer(),
@@ -204,6 +234,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 ),
               if (wins.isNotEmpty)
                 FloatingActionButton(
+                  heroTag: const ValueKey("add-win"),
                   key: GlobalKey(),
                   onPressed: _showCross == true ? _onTriggerAnimation : _addWin,
                   shape: const CircleBorder(),
@@ -215,11 +246,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             ],
           ),
           floatingActionButtonLocation:
-              FloatingActionButtonLocation.centerFloat,
+              FloatingActionButtonLocation.centerDocked,
           body: CustomScrollView(
             slivers: [
               SliverAppBar(
-                expandedHeight: 140,
                 pinned: true,
                 floating: true,
                 flexibleSpace: FlexibleSpaceBar(
@@ -227,10 +257,46 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   centerTitle: true,
                   title: MyText(
                     "Your Wins",
-                    style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                    style: Theme.of(context).textTheme.titleSmall!.copyWith(
                         color: Theme.of(context).colorScheme.onPrimary),
                   ),
                 ),
+              ),
+              const GroupingHeader(),
+              ValueListenableBuilder(
+                valueListenable: _winsProvider.selectedTab,
+                builder: (context, selectedTab, child) {
+                  var groupedWins = _winsProvider.yearMonthDayWins.value;
+
+                  var availableTabs = _winsProvider.tabs.value;
+
+                  if (availableTabs.length > 1) {
+                    var selectedTabString = availableTabs[selectedTab];
+
+                    if (selectedTabString == "Years") {
+                      groupedWins = _winsProvider.yearWins.value;
+
+                      return GroupedWinsGrid(groupedWins: groupedWins);
+                    } else if (selectedTabString == "Months") {
+                      groupedWins = _winsProvider.yearMonthWins.value;
+
+                      return MonthlyGroupedWins(
+                        yearMonthMap: _winsProvider.yearMonthMap.value,
+                        yearMonthWins: groupedWins,
+                      );
+                    }
+                  }
+
+                  return MultiSliver(
+                    pushPinnedChildren: true,
+                    children: [
+                      GroupedWinsList(
+                        groupedWins: groupedWins,
+                        onEditWin: _editWin,
+                      )
+                    ],
+                  );
+                },
               ),
               if (wins.length < 10)
                 SliverToBoxAdapter(
@@ -272,22 +338,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     ),
                   ),
                 ),
-              SliverList(
-                delegate: SliverChildBuilderDelegate(
-                  (context, index) {
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 16, vertical: 16.0),
-                      child: WinCard(
-                        win: wins[index],
-                        onEdit: () => _editWin(
-                          wins[index],
-                        ),
-                      ),
-                    );
-                  },
-                  childCount: wins.length,
-                ),
+              const SliverPadding(
+                padding: EdgeInsets.only(bottom: 200),
               ),
             ],
           ),

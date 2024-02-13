@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:happiness_team_app/providers/app.provider.dart';
+import 'package:intl/intl.dart';
 
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
@@ -95,4 +96,14 @@ Duration timeUntil3amNextDay() {
     // If the current time is before 3 am today, calculate the duration until 3 am today.
     return threeAMToday.difference(now);
   }
+}
+
+String convertToMonthName(String dateString) {
+  // Parse the string to a DateTime object.
+  DateTime dateTime = DateTime.parse("$dateString-01");
+
+  // Format the DateTime object to get the full month name.
+  String monthName = DateFormat.MMMM().format(dateTime);
+
+  return monthName;
 }

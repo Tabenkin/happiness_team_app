@@ -7,8 +7,18 @@
  * See a full list of supported triggers at https://firebase.google.com/docs/functions
  */
 
-import {onRequest} from "firebase-functions/v2/https";
-import * as logger from "firebase-functions/logger";
+import { initializeApp } from "firebase-admin/app";
+initializeApp();
+
+import * as WinHelpers from "./wins.helper";
+
+export const addWin = WinHelpers.addWin;
+export const removeWin = WinHelpers.removeWin;
+
+import * as NotificationHelpers from "./notifications.helper";
+
+export const randomPinRemindersCron =
+  NotificationHelpers.randomPinRemindersCron;
 
 // Start writing functions
 // https://firebase.google.com/docs/functions/typescript

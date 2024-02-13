@@ -83,6 +83,7 @@ class UserProvider with ChangeNotifier {
       // Get the token each time the application launches
       String? token = await FirebaseMessaging.instance.getToken();
       if (token != null) {
+        print(token);
         await assignDeviceToken(token);
       }
     }

@@ -229,8 +229,6 @@ class WinningWheelState extends State<WinningWheel> {
             );
           }
 
-          print(circleDepth);
-
           return Transform.translate(
             offset: positionAnimation.value,
             child: Container(
@@ -241,6 +239,7 @@ class WinningWheelState extends State<WinningWheel> {
                 borderRadius: BorderRadius.circular(borderRadius),
               ),
               child: FloatingActionButton(
+                heroTag: ValueKey(color),
                 onPressed: widget.onTriggerAnimation,
                 backgroundColor: color,
                 elevation: winWidget != null && circleDepth == 2 ? 1.0 : 0.0,

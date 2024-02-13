@@ -22,6 +22,14 @@ class _WinFormContainerState extends State<WinFormContainer> {
   bool _isSaving = false;
 
   void _save() async {
+    if (widget.win.notes.isEmpty) {
+      DialogHelper.showSimpleErrorToast(
+        context,
+        "Please enter some notes",
+      );
+      return;
+    }
+
     setState(() {
       _isSaving = true;
     });
@@ -34,7 +42,6 @@ class _WinFormContainerState extends State<WinFormContainer> {
   }
 
   void _doneSaving() {
-    
     DialogHelper.showSimpleSuccessToast(context, "Win Saved!", margin: 8);
     Navigator.of(context).pop();
   }

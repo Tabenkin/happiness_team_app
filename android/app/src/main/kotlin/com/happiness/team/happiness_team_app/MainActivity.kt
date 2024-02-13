@@ -1,4 +1,4 @@
-package com.happiness.team.happiness_team_app
+package com.team.happinessTeamApp
 
 import io.flutter.embedding.android.FlutterActivity
 

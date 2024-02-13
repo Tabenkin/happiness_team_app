@@ -51,7 +51,7 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyCzJAMI6PjOq_A9EGaDgusb48YuHsadxKU',
-    appId: '1:274381462997:android:7594bba46d59a05cf4b15c',
+    appId: '1:274381462997:android:6816c68949f29e2bf4b15c',
     messagingSenderId: '274381462997',
     projectId: 'happinessteamwinningwheel',
     storageBucket: 'happinessteamwinningwheel.appspot.com',
@@ -59,11 +59,11 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyAwee4uaUUzEQEc6WVmTQzUCfregrmuaM4',
-    appId: '1:274381462997:ios:87d25c26d356710ff4b15c',
+    appId: '1:274381462997:ios:550d5911904e144df4b15c',
     messagingSenderId: '274381462997',
     projectId: 'happinessteamwinningwheel',
     storageBucket: 'happinessteamwinningwheel.appspot.com',
-    iosClientId: '274381462997-5ikvkn9igit2our3cg7octfp80sljqmn.apps.googleusercontent.com',
-    iosBundleId: 'com.happiness.team.happinessTeamApp',
+    iosClientId: '274381462997-966qnr17cl5pcqe6sjv1mk2p359g8cvo.apps.googleusercontent.com',
+    iosBundleId: 'com.team.happinessTeamApp',
   );
 }

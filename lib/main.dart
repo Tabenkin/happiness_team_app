@@ -1,6 +1,7 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:happiness_team_app/happiness_theme.dart';
@@ -50,6 +51,11 @@ class _MyAppState extends State<MyApp> {
     );
 
     _authProvider.initializeListeners();
+
+    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+      _appRouter.navigate(const HomeRoute());
+      _winsProvider.triggerRandomWin();
+    });
 
     super.initState();
   }

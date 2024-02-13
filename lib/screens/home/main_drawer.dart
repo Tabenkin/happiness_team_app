@@ -32,7 +32,7 @@ class _MainDrawerState extends State<MainDrawer> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Image.asset(
                     "assets/images/icon.png",
@@ -43,10 +43,9 @@ class _MainDrawerState extends State<MainDrawer> {
                   ),
                   Text(
                     "Tools",
-                    style: Theme.of(context)
-                        .textTheme
-                        .bodyLarge!
-                        .copyWith(color: Theme.of(context).colorScheme.primary),
+                    style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                        color: Theme.of(context).colorScheme.primary,
+                        fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(
                     height: 8.0,
@@ -72,7 +71,7 @@ class _MainDrawerState extends State<MainDrawer> {
                     height: 8.0,
                   ),
                   Divider(
-                    color: theme.light,
+                    color: theme.medium,
                   ),
                   const SizedBox(
                     height: 8.0,

@@ -7,9 +7,9 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:274381462997:android:7594bba46d59a05cf4b15c",
+        "mobilesdk_app_id": "1:274381462997:android:6816c68949f29e2bf4b15c",
         "android_client_info": {
-          "package_name": "com.happiness.team.happiness_team_app"
+          "package_name": "com.team.happinessTeamApp"
         }
       },
       "oauth_client": [

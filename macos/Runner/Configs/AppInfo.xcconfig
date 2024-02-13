@@ -8,7 +8,7 @@
 PRODUCT_NAME = happiness_team_app
 
 // The application's bundle identifier
-PRODUCT_BUNDLE_IDENTIFIER = com.happiness.team.happinessTeamApp
+PRODUCT_BUNDLE_IDENTIFIER = com.team.happinessTeamApp
 
 // The copyright displayed in application information
 PRODUCT_COPYRIGHT = Copyright © 2024 com.happiness.team. All rights reserved.

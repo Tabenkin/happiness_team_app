@@ -20,6 +20,9 @@ final ThemeData happinessTheme = ThemeData(
     titleMedium: GoogleFonts.ptSans(
       fontSize: 32.0,
     ),
+    titleSmall: GoogleFonts.ptSans(
+      fontSize: 28.0,
+    ),
     bodyLarge: GoogleFonts.ptSans(fontSize: 22.0, height: 1.1),
     bodyMedium: GoogleFonts.ptSans(fontSize: 16.0, height: 1.1),
   ),
