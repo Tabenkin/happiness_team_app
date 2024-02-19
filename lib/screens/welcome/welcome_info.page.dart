@@ -40,22 +40,6 @@ class _WelcomeInfoPageState extends State<WelcomeInfoPage> {
 
     await _userProvider.currentUser.save();
 
-    if (_userProvider.currentUser.allowPushNotifications) {
-      // ok here we want to enable push notification and do the prompt to get permission to to that.
-      _requestPushNotificationPermission();
-      return;
-    }
-
-    setState(() {
-      _isSaving = false;
-    });
-
-    widget.onNextPage();
-  }
-
-  _requestPushNotificationPermission() async {
-    _userProvider.requestPushNotificationPermissions();
-
     setState(() {
       _isSaving = false;
     });
@@ -162,23 +146,6 @@ class _WelcomeInfoPageState extends State<WelcomeInfoPage> {
                   () {
                     _userProvider.currentUser.allowEmailNotifications =
                         newValue;
-                  },
-                );
-              },
-            ),
-            const SizedBox(
-              height: 16.0,
-            ),
-            const Text("Would you like to receive emails?"),
-            const SizedBox(
-              height: 8.0,
-            ),
-            Switch(
-              value: _userProvider.currentUser.allowPushNotifications,
-              onChanged: (newValue) {
-                setState(
-                  () {
-                    _userProvider.currentUser.allowPushNotifications = newValue;
                   },
                 );
               },

@@ -23,8 +23,8 @@ class _MainDrawerState extends State<MainDrawer> {
     var theme = Theme.of(context);
 
     return Drawer(
-      backgroundColor: Colors.white,
-      surfaceTintColor: Colors.white,
+      backgroundColor: Theme.of(context).colorScheme.background,
+      surfaceTintColor: Theme.of(context).colorScheme.background,
       child: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16.0),

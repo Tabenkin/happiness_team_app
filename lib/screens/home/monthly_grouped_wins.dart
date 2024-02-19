@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:happiness_team_app/happiness_theme.dart';
 import 'package:happiness_team_app/helpers/functions.helpers.dart';
 import 'package:happiness_team_app/models/win.model.dart';
 import 'package:happiness_team_app/screens/home/grouped_wins_grid.dart';
@@ -24,6 +25,11 @@ class _MonthlyGroupedWinsState extends State<MonthlyGroupedWins> {
     return MultiSliver(
       pushPinnedChildren: false,
       children: [
+        const SliverToBoxAdapter(
+          child: SizedBox(
+            height: 16.0,
+          ),
+        ),
         for (var year in widget.yearMonthMap.keys) _buildYearGrid(year)
       ],
     );
@@ -46,32 +52,21 @@ class _MonthlyGroupedWinsState extends State<MonthlyGroupedWins> {
       pushPinnedChildren: true,
       children: [
         SliverPinnedHeader(
-          child: Align(
-            alignment: Alignment.center,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: PhysicalModel(
-                color: Theme.of(context).colorScheme.onPrimary,
-                borderRadius: BorderRadius.circular(20.0),
-                elevation: 0.0,
-                child: Container(
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    border: Border.all(
-                        color: Theme.of(context).colorScheme.primary),
-                    borderRadius: BorderRadius.circular(20.0),
-                    color: Theme.of(context).colorScheme.onPrimary,
-                  ),
-                  padding: const EdgeInsets.symmetric(
-                      vertical: 16.0, horizontal: 16.0),
-                  child: Text(
-                    year,
-                    textAlign: TextAlign.center,
-                    style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                        color: Theme.of(context).colorScheme.secondary),
-                  ),
+          child: Container(
+            color: Theme.of(context).colorScheme.background,
+            padding:
+                const EdgeInsets.symmetric(vertical: 0.0, horizontal: 16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  year,
+                  style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
                 ),
-              ),
+                const Divider(),
+              ],
             ),
           ),
         ),
@@ -83,7 +78,12 @@ class _MonthlyGroupedWinsState extends State<MonthlyGroupedWins> {
 
             return convertToMonthName(label);
           },
-        )
+        ),
+        const SliverToBoxAdapter(
+          child: SizedBox(
+            height: 32.0,
+          ),
+        ),
       ],
     );
   }

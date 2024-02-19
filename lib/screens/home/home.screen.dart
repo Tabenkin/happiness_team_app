@@ -43,6 +43,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   late WinsProvider _winsProvider;
 
   StreamSubscription? _randomWinTriggerSubscription;
+  StreamSubscription? _addWinTriggerSubscription;
 
   void _addWin() {
     _editWin(
@@ -84,7 +85,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   }
 
   Win? _win;
-  Map<int, int> circleDepths = {0: 1, 1: 1, 2: 2, 3: 1};
+  Map<int, int> circleDepths = {0: 1, 1: 1, 2: 1, 3: 2};
 
   _getRandomWin() {
     var wins = Provider.of<WinsProvider>(context, listen: false).wins.value;
@@ -193,7 +194,17 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       if (event == null) return;
 
       _onTriggerAnimation();
-      _winsProvider.clearEvents();
+      _winsProvider.clearRandomWinEvents();
+    });
+
+    _addWinTriggerSubscription =
+        _winsProvider.streamAddWinTriggers.listen((event) {
+      if (event == null) return;
+
+      Future.delayed(const Duration(milliseconds: 750), () {
+        _addWin();
+      });
+      _winsProvider.clearAddWinEvents();
     });
 
     super.initState();
@@ -202,6 +213,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   @override
   void dispose() {
     _randomWinTriggerSubscription?.cancel();
+    _addWinTriggerSubscription?.cancel();
     _initialTransformController.dispose();
     _rotationAnimationController.dispose();
     _finalTransformController.dispose();
@@ -247,21 +259,43 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           ),
           floatingActionButtonLocation:
               FloatingActionButtonLocation.centerDocked,
-          body: CustomScrollView(
-            slivers: [
-              SliverAppBar(
-                pinned: true,
-                floating: true,
-                flexibleSpace: FlexibleSpaceBar(
-                  titlePadding: const EdgeInsets.symmetric(vertical: 16.0),
-                  centerTitle: true,
-                  title: MyText(
+          appBar: AppBar(
+            backgroundColor: Theme.of(context).colorScheme.background,
+            surfaceTintColor: Theme.of(context).colorScheme.background,
+            iconTheme: IconThemeData(
+              color: Theme.of(context).colorScheme.primary,
+            ),
+            bottom: PreferredSize(
+              preferredSize: const Size.fromHeight(0),
+              child: Divider(
+                color: Theme.of(context).colorScheme.primary,
+              ),
+            ),
+            flexibleSpace: FlexibleSpaceBar(
+              titlePadding: const EdgeInsets.symmetric(vertical: 16.0),
+              centerTitle: true,
+              title: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Image.asset(
+                    "assets/images/icon.png",
+                    width: 30,
+                  ),
+                  const SizedBox(
+                    width: 8.0,
+                  ),
+                  MyText(
                     "Your Wins",
                     style: Theme.of(context).textTheme.titleSmall!.copyWith(
-                        color: Theme.of(context).colorScheme.onPrimary),
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
                   ),
-                ),
+                ],
               ),
+            ),
+          ),
+          body: CustomScrollView(
+            slivers: [
               const GroupingHeader(),
               ValueListenableBuilder(
                 valueListenable: _winsProvider.selectedTab,

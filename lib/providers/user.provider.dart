@@ -71,6 +71,19 @@ class UserProvider with ChangeNotifier {
     });
   }
 
+
+  // After some trial an error, I discovered that if we don't request permission and call getToken on every app start, then push notifications stop working
+  // After the user taps the first one.
+  Future<void> refreshPushNotifications() async {
+    await FirebaseMessaging.instance.requestPermission(
+      alert: true,
+      badge: true,
+      provisional: false,
+    );
+
+    await FirebaseMessaging.instance.getToken();
+  }
+
   Future<void> requestPushNotificationPermissions() async {
     NotificationSettings settings =
         await FirebaseMessaging.instance.requestPermission(
@@ -83,7 +96,6 @@ class UserProvider with ChangeNotifier {
       // Get the token each time the application launches
       String? token = await FirebaseMessaging.instance.getToken();
       if (token != null) {
-        print(token);
         await assignDeviceToken(token);
       }
     }

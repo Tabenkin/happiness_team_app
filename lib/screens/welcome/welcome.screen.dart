@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:happiness_team_app/happiness_theme.dart';
 import 'package:happiness_team_app/router/happiness_router.gr.dart';
 import 'package:happiness_team_app/screens/welcome/welcome_info.page.dart';
+import 'package:happiness_team_app/screens/welcome/welcome_notifications_setup.page.dart';
 import 'package:happiness_team_app/screens/welcome/welcome_video.page.dart';
 
 @RoutePage()
@@ -36,6 +37,9 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
 
     var pages = [
       WelcomeInfoPage(
+        onNextPage: _nextPage,
+      ),
+      WelcomeNotificationsSetupPage(
         onNextPage: _nextPage,
       ),
       WelcomeVideoPage(

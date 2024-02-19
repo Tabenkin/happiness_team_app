@@ -54,8 +54,9 @@ class _WinFormContainerState extends State<WinFormContainer> {
       },
       child: Scaffold(
         appBar: AppBar(
-          backgroundColor: Theme.of(context).colorScheme.surface,
-          surfaceTintColor: Theme.of(context).colorScheme.surface,
+          toolbarHeight: kToolbarHeight * 1.5,
+          backgroundColor: Theme.of(context).colorScheme.background,
+          surfaceTintColor: Theme.of(context).colorScheme.background,
           leading: IconButton(
             icon: const Icon(Icons.close),
             color: Theme.of(context).colorScheme.primary,
@@ -63,10 +64,19 @@ class _WinFormContainerState extends State<WinFormContainer> {
               Navigator.of(context).pop();
             },
           ),
-          title: Text(
-            widget.win.id != null ? "Edit Win" : "Add Win",
-            style: TextStyle(
+          bottom: PreferredSize(
+            preferredSize: const Size.fromHeight(0),
+            child: Divider(
               color: Theme.of(context).colorScheme.primary,
+            ),
+          ),
+          title: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Text(
+              widget.win.id != null ? "Edit Win" : "Add Win",
+              style: Theme.of(context).textTheme.titleSmall!.copyWith(
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
             ),
           ),
         ),

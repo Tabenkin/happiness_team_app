@@ -107,3 +107,52 @@ String convertToMonthName(String dateString) {
 
   return monthName;
 }
+
+// Converts a date string in the format "YYYY-MM-DD" to a nice format like "May 14, 2023"
+String convertDateStringToNiceFormat(String dateString) {
+  // Parse the date string into a DateTime object
+  DateTime parsedDate = DateTime.parse(dateString);
+
+  // Define an array of month names
+  List<String> months = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December"
+  ];
+
+  // Get the month name
+  String monthName = months[parsedDate.month - 1];
+
+  // Get the day and calculate the ordinal suffix
+  int day = parsedDate.day;
+  String suffix;
+  switch (day) {
+    case 1:
+    case 21:
+    case 31:
+      suffix = "st";
+      break;
+    case 2:
+    case 22:
+      suffix = "nd";
+      break;
+    case 3:
+    case 23:
+      suffix = "rd";
+      break;
+    default:
+      suffix = "th";
+  }
+
+  // Format the date
+  return "$monthName $day$suffix, ${parsedDate.year}";
+}

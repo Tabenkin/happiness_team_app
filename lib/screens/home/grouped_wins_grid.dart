@@ -13,7 +13,7 @@ class GroupedWinsGrid extends StatelessWidget {
     Key? key,
   }) : super(key: key);
 
-  _showWins(BuildContext context, String label, Wins wins) {
+  _showWins(BuildContext context, String label, String dateKey, Wins wins) {
     Navigator.of(context).push(
       PageRouteBuilder(
         opaque: false, // Make route background transparent
@@ -26,8 +26,9 @@ class GroupedWinsGrid extends StatelessWidget {
               height: screenHeight *
                   1, // Set the height to 90% of the screen height
               child: GroupedWinsListModal(
-                labelBackgroundColor: Theme.of(context).colorScheme.primary,
+                labelBackgroundColor: Theme.of(context).colorScheme.secondary,
                 label: label,
+                dateKey: dateKey,
                 wins: wins,
               ),
             ),
@@ -66,33 +67,55 @@ class GroupedWinsGrid extends StatelessWidget {
             }
 
             return Hero(
-              tag: label,
+              tag: labelKey,
               child: Card(
+                surfaceTintColor: Theme.of(context).colorScheme.background,
+                color: Theme.of(context).colorScheme.background,
                 child: Container(
                   decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.secondary,
                     borderRadius: BorderRadius.circular(8.0),
-                    border: Border.all(
-                      color: Theme.of(context).colorScheme.primary,
-                    ),
+                    // border: Border.all(
+                    //   color: Theme.of(context).colorScheme.secondary,
+                    // ),
                   ),
                   child: InkWell(
                     borderRadius: BorderRadius.circular(8.0),
-                    onTap: () => _showWins(context, label, groupedWins[labelKey]!),
+                    onTap: () => _showWins(
+                      context,
+                      label,
+                      labelKey,
+                      groupedWins[labelKey]!,
+                    ),
                     child: Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          MyText(
-                            label, // Displaying the year from groupedWins.
-                            style: Theme.of(context)
-                                .textTheme
-                                .titleMedium, // Applying text style.
-                          ),
-                          MyText(
-                            "(${groupedWins[labelKey]!.length})",
-                            style: Theme.of(context).textTheme.bodyLarge,
-                          ),
-                        ],
+                      child: SingleChildScrollView(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            MyText(
+                              label, // Displaying the year from groupedWins.
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .titleMedium!
+                                  .copyWith(
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .onSecondary,
+                                  ), // Applying text style.
+                            ),
+                            MyText(
+                              "(${groupedWins[labelKey]!.length} wins)",
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyLarge!
+                                  .copyWith(
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .onSecondary,
+                                  ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),

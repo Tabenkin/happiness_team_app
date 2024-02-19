@@ -27,7 +27,11 @@ class _GroupingTabsState extends State<GroupingTabs> {
   Widget build(BuildContext context) {
     // Creating the map for the children of CupertinoSlidingSegmentedControl
 
-    return Padding(
+    return Container(
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.background,
+        
+      ),      
       padding: const EdgeInsets.all(8.0),
       child: MultiValueListenableBuilder(
         valueListenables: [
@@ -43,7 +47,16 @@ class _GroupingTabsState extends State<GroupingTabs> {
                 index++)
               index: Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: Text(_winsProvider.tabs.value[index]),
+                child: Text(
+                  _winsProvider.tabs.value[index],
+                  style: TextStyle(
+                    color: _winsProvider.selectedTab.value == index
+                        ? Theme.of(context).colorScheme.primary
+                        : Theme.of(context).colorScheme.onPrimary,
+                    fontSize: 16.0,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
               ),
           };
 
@@ -61,8 +74,7 @@ class _GroupingTabsState extends State<GroupingTabs> {
                   width: double.infinity,
                   child: CupertinoSlidingSegmentedControl<int>(
                     children: children,
-                    backgroundColor:
-                        Theme.of(context).colorScheme.primary.withOpacity(0.4),
+                    backgroundColor: Theme.of(context).colorScheme.tertiary,
                     padding: const EdgeInsets.all(11.0),
                     onValueChanged: (int? newValue) {
                       _winsProvider.setSelectedTab(newValue ?? 0);

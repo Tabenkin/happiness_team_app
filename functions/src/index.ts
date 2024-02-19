@@ -17,8 +17,16 @@ export const removeWin = WinHelpers.removeWin;
 
 import * as NotificationHelpers from "./notifications.helper";
 
-export const randomPinRemindersCron =
-  NotificationHelpers.randomPinRemindersCron;
+export const randomWinRemindersCron =
+  NotificationHelpers.randomWinRemindersCron;
+export const testRandomWinsReminder =
+  NotificationHelpers.testRandomWinsReminder;
+
+import * as EmailNewsletter from "./email-newsletter.helper";
+export const winNotificationEmailsCron =
+  EmailNewsletter.winNotificationEmailsCron;
+export const testWinNotificationEmailsCron =
+  EmailNewsletter.testWinNotificationEmailsCron;
 
 // Start writing functions
 // https://firebase.google.com/docs/functions/typescript

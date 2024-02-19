@@ -7,7 +7,6 @@ import 'package:happiness_team_app/providers/wins.provider.dart';
 import 'package:happiness_team_app/services/auth.service.dart';
 
 class AppProvider with ChangeNotifier {
-
   late WinsProvider _winsProvider;
   late UserProvider _userProvider;
 
@@ -18,7 +17,7 @@ class AppProvider with ChangeNotifier {
 
   AppProvider({
     required WinsProvider winsProvider,
-    required UserProvider userProvider,    
+    required UserProvider userProvider,
   }) {
     _userProvider = userProvider;
     _winsProvider = winsProvider;
@@ -45,6 +44,8 @@ class AppProvider with ChangeNotifier {
       await _userProvider.fetchUser();
       _winsProvider.initializeWins();
     }
+
+    await _userProvider.refreshPushNotifications();
   }
 
   Future<void> onAppStart() async {

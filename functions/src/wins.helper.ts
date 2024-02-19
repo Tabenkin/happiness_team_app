@@ -10,20 +10,23 @@ import { getFirestore } from "firebase-admin/firestore";
 const db = getFirestore();
 
 export const addWin = onDocumentCreated(
-  "/users/{userId}/wins",
+  "/users/{userId}/wins/{winId}",
   async (event) => {
-    await updateWinCount(event.params.userId);
+    await updateWinCount(event.params.userId, true);
   }
 );
 
 export const removeWin = onDocumentDeleted(
-  "/users/{userId}/wins",
+  "/users/{userId}/wins/{winId}",
   async (event) => {
-    await updateWinCount(event.params.userId);
+    await updateWinCount(event.params.userId, false);
   }
 );
 
-const updateWinCount = async (userId: string) => {
+const updateWinCount = async (
+  userId: string,
+  setLastCreatedWinTime: boolean
+) => {
   const userWinsRef = db.collection(`/users/${userId}/wins`).count();
 
   // Count the number of wins
@@ -33,8 +36,14 @@ const updateWinCount = async (userId: string) => {
   // Reference to the user document
   const userRef = db.doc(`/users/${userId}`);
 
-  // Update the user's numWins field
-  return userRef.update({
+  var userData = {
     numWins: numWins,
-  });
+  } as any;
+
+  if (setLastCreatedWinTime) {
+    userData.lastCreatedWinTimestamp = new Date().getTime();
+  }
+
+  // Update the user's numWins field
+  return userRef.update(userData);
 };

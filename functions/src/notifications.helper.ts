@@ -2,56 +2,116 @@ const { onSchedule } = require("firebase-functions/v2/scheduler");
 
 import { getFirestore } from "firebase-admin/firestore";
 import { getMessaging, Message } from "firebase-admin/messaging";
+import { onCall } from "firebase-functions/v2/https";
 
 const db = getFirestore();
 const messaging = getMessaging();
 
-export const randomPinRemindersCron = onSchedule(
-  "every 5 minutes",
+export const randomWinRemindersCron = onSchedule(
+  "every 7 days",
   async () => {
-    // Query /users collection for users who allow push notifications and have more than 10 wins
-    const usersSnapshot = await db
-      .collection("/users")
-      .where("allowPushNotifications", "==", true)
-      .where("numWins", ">", 10)
-      .get();
+    await sendRandomWinsReminder();
 
-    if (usersSnapshot.empty) {
-      console.log("No matching users found.");
-      return null;
-    }
-
-    const devices = usersSnapshot.docs.map((userDoc) => {
-      const notificationDevices = userDoc
-        .data()
-        .notificationDeviceTokens.map((a: any) => a.token);
-
-      return notificationDevices;
-    });
-
-    //flatten devices
-    const allDevices = devices.flat();
-
-    var allPromises = [];
-
-    // Send a message to the devices
-    for (var device of allDevices) {
-      const message: Message = {
-        notification: {
-          title: "You're on a roll!",
-          body: "Keep up the good work!",
-        },
-        token: device,
-      };
-
-      try {
-        allPromises.push(messaging.send(message));
-        console.log("Message sent successfully.");
-      } catch (error) {
-        console.error("Error sending message:", error);
-      }
-    }
-
-    return Promise.all(allPromises);
+    return true;
   }
 );
+
+export const testRandomWinsReminder = onCall(async () => {
+  await sendRandomWinsReminder();
+  return true;
+});
+
+const sendRandomWinsReminder = async () => {
+  // Query /users collection for users who allow push notifications and have more than 10 wins
+  const usersSnapshot = await db
+    .collection("/users")
+    .where("allowPushNotifications", "==", true)
+    .get();
+
+  if (usersSnapshot.empty) {
+    console.log("No matching users found.");
+    return;
+  }
+
+  var allMessages = [];
+
+  for (var userDoc of usersSnapshot.docs) {
+    var userData = userDoc.data();
+
+    // Create a timestamp representing 7 days ago
+    const sevenDaysAgo = new Date();
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+    const sevenDaysAgoTimestamp = sevenDaysAgo.getTime();
+
+    var sendNotification = false;
+    var notification = {};
+    var data = {};
+
+    if (userData.lastCreatedWinTimestamp < sevenDaysAgoTimestamp) {
+      notification = {
+        title: "Take a moment",
+        body: "Don't forget to add your wins to the app.",
+      };
+
+      data = {
+        event: "addWinReminder",
+      };
+
+      sendNotification = true;
+    }
+
+    if (
+      userData.lastCreatedWinTimestamp > sevenDaysAgoTimestamp &&
+      userData.numWins > 10
+    ) {
+      notification = {
+        title: "Take a moment",
+        body: "Reflect on one of your wins.",
+      };
+
+      data = {
+        event: "randomWinReminder",
+      };
+
+      sendNotification = true;
+    }
+
+    if (sendNotification != true) continue;
+
+    for (var device of userData.notificationDeviceTokens) {
+      var token = device.token;
+      const message: Message = {
+        notification: notification,
+
+        data: data,
+        token: token,
+        android: {
+          priority: "high",
+          notification: {
+            sound: "default",
+          },
+        },
+        apns: {
+          payload: {
+            aps: {
+              sound: "default",
+              badge: 0,
+            },
+          },
+        },
+      };
+
+      allMessages.push(message);
+    }
+  }
+
+  if (allMessages.length == 0) {
+    return;
+  }
+
+  try {
+    await messaging.sendEach(allMessages);
+  } catch (error) {
+    console.log("Error?", error);
+  }
+};

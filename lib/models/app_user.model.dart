@@ -60,6 +60,9 @@ class AppUser {
   }
 
   save() async {
-    await FirebaseFirestore.instance.doc("/users/$id").set(toMap());
+    await FirebaseFirestore.instance.doc("/users/$id").set(
+          toMap(),
+          SetOptions(merge: true),
+        );
   }
 }

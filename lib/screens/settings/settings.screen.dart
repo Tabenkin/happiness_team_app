@@ -60,6 +60,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
           },
         ),
         title: const Text('Settings'),
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(0),
+          child: Divider(
+            color: Theme.of(context).colorScheme.primary,
+          ),
+        ),
       ),
       body: SingleChildScrollView(
         child: Padding(

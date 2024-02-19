@@ -52,12 +52,43 @@ class _MyAppState extends State<MyApp> {
 
     _authProvider.initializeListeners();
 
-    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-      _appRouter.navigate(const HomeRoute());
-      _winsProvider.triggerRandomWin();
+    FirebaseMessaging.onBackgroundMessage((message) async {
+      _handleMessage(message);
     });
 
+    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+      _handleMessage(message);
+    });
+
+    _checkInitialMessages();
+
     super.initState();
+  }
+
+  _checkInitialMessages() async {
+    var initialMessage = await FirebaseMessaging.instance.getInitialMessage();
+
+    if (initialMessage != null) {
+      _handleMessage(initialMessage);
+    }
+  }
+
+  _handleMessage(RemoteMessage message) {
+    if (message.data['event'] == null) return;
+
+    if (message.data['event'] == 'randomWinReminder') {
+      Future.delayed(const Duration(milliseconds: 100), () {
+        _appRouter.navigate(const HomeRoute());
+        _winsProvider.triggerRandomWin();
+      });
+    }
+
+    if (message.data['event'] == 'addWinReminder') {
+      Future.delayed(const Duration(milliseconds: 100), () {
+        _appRouter.navigate(const HomeRoute());
+        _winsProvider.triggerAddWin();
+      });
+    }
   }
 
   @override
