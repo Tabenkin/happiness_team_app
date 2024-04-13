@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:happiness_team_app/widgets/my_button.widget.dart';
+import 'package:happiness_team_app/widgets/my_text.widget.dart';
 
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:crypto/crypto.dart';
@@ -118,7 +119,12 @@ class _AppleSigninButtonState extends State<AppleSigninButton> {
           const SizedBox(
             width: 16,
           ),
-          Text("${widget.label} with Apple"),
+          MyText(
+            "${widget.label} with Apple",
+            style: TextStyle(
+              color: theme.onApple,
+            ),
+          ),
         ],
       ),
     );

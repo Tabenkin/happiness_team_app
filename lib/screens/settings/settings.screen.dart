@@ -1,8 +1,12 @@
 import 'package:auto_route/auto_route.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_launcher_icons/xml_templates.dart';
 import 'package:happiness_team_app/helpers/dialog.helpers.dart';
+import 'package:happiness_team_app/providers/auth_state.provider.dart';
 import 'package:happiness_team_app/providers/user.provider.dart';
 import 'package:happiness_team_app/widgets/my_button.widget.dart';
+import 'package:happiness_team_app/widgets/my_text.widget.dart';
 import 'package:happiness_team_app/widgets/my_text_input.widget.dart';
 import 'package:provider/provider.dart';
 
@@ -41,6 +45,36 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   _onSavedSuccess() {
     DialogHelper.showSimpleSuccessToast(context, "Settings saved!");
+  }
+
+  var _isDeleting = false;
+
+  _deleteAccount() async {
+    var resposne = await DialogHelper.showConfirmDialog(context,
+        title: "Are you sure?",
+        message:
+            "Are you sure you would like to delete your account? This cannot be undone.");
+
+    if (resposne == true) {
+      try {
+        setState(() {
+          _isDeleting = true;
+        });
+
+        await FirebaseFunctions.instance.httpsCallable("onDeleteAccount")();
+        _logout();
+      } catch (error) {
+        print("Some error? $error");
+
+        setState(() {
+          _isDeleting = false;
+        });
+      }
+    }
+  }
+
+  _logout() {
+    Provider.of<AuthStateProvider>(context, listen: false).logout(context);
   }
 
   @override
@@ -98,7 +132,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               // Toggle with labe "Enable email notifications?"
               Row(
                 children: [
-                  const Text("Enable email notifications?"),
+                  const MyText("Enable email notifications?"),
                   const Spacer(),
                   Switch(
                     value: _userProvider.user?.allowEmailNotifications ?? false,
@@ -116,7 +150,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               //Toggle with label Allow push notifiations?
               Row(
                 children: [
-                  const Text("Allow push notifiations?"),
+                  const MyText("Allow push notifiations?"),
                   const Spacer(),
                   Switch(
                     value: _userProvider.user?.allowPushNotifications ?? false,
@@ -137,6 +171,23 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   onTap: _saveUser,
                   showSpinner: _isSaving,
                   child: const Text("Save"),
+                ),
+              ),
+              const SizedBox(
+                height: 16.0,
+              ),
+              SizedBox(
+                width: double.infinity,
+                child: MyButton(
+                  showSpinner: _isDeleting,
+                  onTap: _deleteAccount,
+                  color: MyButtonColor.error,
+                  filled: false,
+                  child: MyText(
+                    "Delete Account",
+                    style:
+                        TextStyle(color: Theme.of(context).colorScheme.error),
+                  ),
                 ),
               ),
             ],

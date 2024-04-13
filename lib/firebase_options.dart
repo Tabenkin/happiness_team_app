@@ -17,10 +17,7 @@ import 'package:flutter/foundation.dart'
 class DefaultFirebaseOptions {
   static FirebaseOptions get currentPlatform {
     if (kIsWeb) {
-      throw UnsupportedError(
-        'DefaultFirebaseOptions have not been configured for web - '
-        'you can reconfigure this by running the FlutterFire CLI again.',
-      );
+      return web;
     }
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
@@ -28,10 +25,7 @@ class DefaultFirebaseOptions {
       case TargetPlatform.iOS:
         return ios;
       case TargetPlatform.macOS:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for macos - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+        return macos;
       case TargetPlatform.windows:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for windows - '
@@ -49,9 +43,19 @@ class DefaultFirebaseOptions {
     }
   }
 
+  static const FirebaseOptions web = FirebaseOptions(
+    apiKey: 'AIzaSyD36cvDm9nD5V3w-OmQuJxmOYnF8v0o8GA',
+    appId: '1:274381462997:web:4504cf9f4f124b6ff4b15c',
+    messagingSenderId: '274381462997',
+    projectId: 'happinessteamwinningwheel',
+    authDomain: 'happinessteamwinningwheel.firebaseapp.com',
+    storageBucket: 'happinessteamwinningwheel.appspot.com',
+    measurementId: 'G-L7P5SRYKXN',
+  );
+
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyCzJAMI6PjOq_A9EGaDgusb48YuHsadxKU',
-    appId: '1:274381462997:android:6816c68949f29e2bf4b15c',
+    appId: '1:274381462997:android:e0e8a4e018d94744f4b15c',
     messagingSenderId: '274381462997',
     projectId: 'happinessteamwinningwheel',
     storageBucket: 'happinessteamwinningwheel.appspot.com',
@@ -63,7 +67,19 @@ class DefaultFirebaseOptions {
     messagingSenderId: '274381462997',
     projectId: 'happinessteamwinningwheel',
     storageBucket: 'happinessteamwinningwheel.appspot.com',
+    androidClientId: '274381462997-0v4l1o6otblpas17vj65g7cr2g249on2.apps.googleusercontent.com',
     iosClientId: '274381462997-966qnr17cl5pcqe6sjv1mk2p359g8cvo.apps.googleusercontent.com',
     iosBundleId: 'com.team.happinessTeamApp',
+  );
+
+  static const FirebaseOptions macos = FirebaseOptions(
+    apiKey: 'AIzaSyAwee4uaUUzEQEc6WVmTQzUCfregrmuaM4',
+    appId: '1:274381462997:ios:6c81e5b1679c1a06f4b15c',
+    messagingSenderId: '274381462997',
+    projectId: 'happinessteamwinningwheel',
+    storageBucket: 'happinessteamwinningwheel.appspot.com',
+    androidClientId: '274381462997-0v4l1o6otblpas17vj65g7cr2g249on2.apps.googleusercontent.com',
+    iosClientId: '274381462997-vbannmq5ffic57ptf81rceap7mlbjtq4.apps.googleusercontent.com',
+    iosBundleId: 'com.team.happinessTeamApp.RunnerTests',
   );
 }

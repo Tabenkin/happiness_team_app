@@ -72,7 +72,7 @@ class _WinFormContainerState extends State<WinFormContainer> {
           ),
           title: Padding(
             padding: const EdgeInsets.all(8.0),
-            child: Text(
+            child: MyText(
               widget.win.id != null ? "Edit Win" : "Add Win",
               style: Theme.of(context).textTheme.titleSmall!.copyWith(
                     color: Theme.of(context).colorScheme.primary,
@@ -80,44 +80,51 @@ class _WinFormContainerState extends State<WinFormContainer> {
             ),
           ),
         ),
-        body: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const MyText("When did you win?"),
-              const SizedBox(
-                height: 8.0,
-              ),
-              SizedBox(
-                width: double.infinity,
-                child: MyDatePicker(
-                  initialValue: widget.win.date,
+        body: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const MyText("When did you win?"),
+                const SizedBox(
+                  height: 8.0,
+                ),
+                SizedBox(
+                  width: double.infinity,
+                  child: MyDatePicker(
+                    initialValue: widget.win.date,
+                    onChanged: (value) {
+                      widget.win.date = value;
+                    },
+                  ),
+                ),
+                const SizedBox(
+                  height: 16.0,
+                ),
+                MyTextArea(
+                  labelText: "Notes",
                   onChanged: (value) {
-                    widget.win.date = value;
+                    widget.win.notes = value;
                   },
+                  initialValue: widget.win.notes,
                 ),
-              ),
-              const SizedBox(
-                height: 16.0,
-              ),
-              MyTextArea(
-                labelText: "Notes",
-                onChanged: (value) {
-                  widget.win.notes = value;
-                },
-                initialValue: widget.win.notes,
-              ),
-              const SizedBox(height: 16.0),
-              SizedBox(
-                width: double.infinity,
-                child: MyButton(
-                  showSpinner: _isSaving,
-                  onTap: _save,
-                  child: const Text("Save"),
+                const SizedBox(height: 16.0),
+                SizedBox(
+                  width: double.infinity,
+                  child: MyButton(
+                    showSpinner: _isSaving,
+                    onTap: _save,
+                    child: MyText(
+                      "Save",
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.onPrimary,
+                      ),
+                    ),
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

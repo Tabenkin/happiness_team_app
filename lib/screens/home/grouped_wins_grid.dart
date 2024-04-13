@@ -26,7 +26,7 @@ class GroupedWinsGrid extends StatelessWidget {
               height: screenHeight *
                   1, // Set the height to 90% of the screen height
               child: GroupedWinsListModal(
-                labelBackgroundColor: Theme.of(context).colorScheme.secondary,
+                labelBackgroundColor: const Color(0xFFE6E6FA),
                 label: label,
                 dateKey: dateKey,
                 wins: wins,
@@ -73,7 +73,8 @@ class GroupedWinsGrid extends StatelessWidget {
                 color: Theme.of(context).colorScheme.background,
                 child: Container(
                   decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.secondary,
+                    // color: Theme.of(context).colorScheme.secondary,
+                    color: const Color(0xFFE6E6FA),
                     borderRadius: BorderRadius.circular(8.0),
                     // border: Border.all(
                     //   color: Theme.of(context).colorScheme.secondary,
@@ -94,25 +95,13 @@ class GroupedWinsGrid extends StatelessWidget {
                           children: [
                             MyText(
                               label, // Displaying the year from groupedWins.
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .titleMedium!
-                                  .copyWith(
-                                    color: Theme.of(context)
-                                        .colorScheme
-                                        .onSecondary,
-                                  ), // Applying text style.
+                              style: Theme.of(context).textTheme.titleMedium!,
+                              maxTextScale: 1.0,
                             ),
                             MyText(
                               "(${groupedWins[labelKey]!.length} wins)",
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodyLarge!
-                                  .copyWith(
-                                    color: Theme.of(context)
-                                        .colorScheme
-                                        .onSecondary,
-                                  ),
+                              style: Theme.of(context).textTheme.bodyLarge!,
+                              maxTextScale: 1.0,
                             ),
                           ],
                         ),

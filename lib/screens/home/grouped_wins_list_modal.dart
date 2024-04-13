@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:happiness_team_app/models/win.model.dart';
 import 'package:happiness_team_app/providers/wins.provider.dart';
 import 'package:happiness_team_app/screens/home/grouped_wins_list.widget.dart';
+import 'package:happiness_team_app/widgets/my_text.widget.dart';
 import 'package:provider/provider.dart';
 
 class GroupedWinsListModal extends StatelessWidget {
@@ -63,15 +64,10 @@ class GroupedWinsListModal extends StatelessWidget {
                               alignment: Alignment.bottomCenter,
                               child: Hero(
                                 tag: dateKey,
-                                child: Text(
+                                child: MyText(
                                   label,
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .titleMedium!
-                                      .copyWith(
-                                          color: Theme.of(context)
-                                              .colorScheme
-                                              .onPrimary),
+                                  style:
+                                      Theme.of(context).textTheme.titleMedium!,
                                 ),
                               ),
                             ),
@@ -81,10 +77,9 @@ class GroupedWinsListModal extends StatelessWidget {
                                 onPressed: () {
                                   Navigator.of(context).pop();
                                 },
-                                icon: Icon(Icons.close,
-                                    color: Theme.of(context)
-                                        .colorScheme
-                                        .onPrimary),
+                                icon: const Icon(
+                                  Icons.close,
+                                ),
                               ),
                             )
                           ],

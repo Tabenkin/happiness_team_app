@@ -34,7 +34,8 @@ class WinningWheelState extends State<WinningWheel> {
   late Animation<double> _initialTransformAnimation;
   late Animation<double> _rotationAnimation;
   late Animation<Offset> _yOffsetAnimation;
-  late Animation<double> _finalTransfomAnimatino;
+  late Animation<double> _finalTransfomAnimation;
+  List<Animation<Color?>> _colorAnimations = [];
   List<Animation<Offset>> _positionAnimations = [];
 
   @override
@@ -45,6 +46,47 @@ class WinningWheelState extends State<WinningWheel> {
       parent: widget.initialTransformController,
       curve: Curves.elasticOut,
     );
+
+    _colorAnimations = [
+      ColorTween(
+        begin: const Color(0xFF136478), // Starting color
+        end: widget.circleColors[0],
+      ).animate(
+        CurvedAnimation(
+          parent: widget.initialTransformController,
+          curve: Curves.elasticOut,
+        ),
+      ),
+      ColorTween(
+        begin: const Color(0xFF136478), // Starting color
+
+        end: widget.circleColors[1],
+      ).animate(
+        CurvedAnimation(
+          parent: widget.initialTransformController,
+          curve: Curves.elasticOut,
+        ),
+      ),
+      ColorTween(
+        begin: const Color(0xFF136478),
+        end: widget.circleColors[2],
+      ).animate(
+        CurvedAnimation(
+          parent: widget.initialTransformController,
+          curve: Curves.elasticOut,
+        ),
+      ),
+      ColorTween(
+        begin: const Color(0xFF136478), // Starting color
+
+        end: widget.circleColors[3],
+      ).animate(
+        CurvedAnimation(
+          parent: widget.initialTransformController,
+          curve: Curves.elasticOut,
+        ),
+      ),
+    ];
 
     _rotationAnimation = Tween(begin: 0.0, end: 4.1 * pi).animate(
       CurvedAnimation(
@@ -65,30 +107,33 @@ class WinningWheelState extends State<WinningWheel> {
 
     _positionAnimations = [
       Tween<Offset>(begin: Offset.zero, end: const Offset(0, -75)).animate(
-          CurvedAnimation(
-              parent: widget.rotationAnimationController,
-              curve: Curves.easeInOut)),
+        CurvedAnimation(
+          parent: widget.rotationAnimationController,
+          curve: Curves.easeInOut,
+        ),
+      ),
       Tween<Offset>(begin: Offset.zero, end: const Offset(75, 0)).animate(
-          CurvedAnimation(
-              parent: widget.rotationAnimationController,
-              curve: Curves.easeInOut)),
+        CurvedAnimation(
+            parent: widget.rotationAnimationController,
+            curve: Curves.easeInOut),
+      ),
       Tween<Offset>(begin: Offset.zero, end: const Offset(0, 75)).animate(
-          CurvedAnimation(
-              parent: widget.rotationAnimationController,
-              curve: Curves.easeInOut)),
+        CurvedAnimation(
+            parent: widget.rotationAnimationController,
+            curve: Curves.easeInOut),
+      ),
       Tween<Offset>(begin: Offset.zero, end: const Offset(-75, 0)).animate(
-          CurvedAnimation(
-              parent: widget.rotationAnimationController,
-              curve: Curves.easeInOut)),
+        CurvedAnimation(
+            parent: widget.rotationAnimationController,
+            curve: Curves.easeInOut),
+      ),
     ];
 
-    _finalTransfomAnimatino = CurvedAnimation(
+    _finalTransfomAnimation = CurvedAnimation(
       parent: widget.finalTransformController,
       curve: Curves.elasticOut,
     );
   }
-
-  final bool _shouldMoveForward = true;
 
   @override
   Widget build(BuildContext context) {
@@ -116,6 +161,7 @@ class WinningWheelState extends State<WinningWheel> {
                     color: Colors.transparent,
                     child: _buildAnimatedCircle(
                       widget.circleColors[index],
+                      _colorAnimations[index],
                       _positionAnimations[index],
                       widget.circleDepths[index] ?? 1,
                     ),
@@ -130,136 +176,148 @@ class WinningWheelState extends State<WinningWheel> {
   }
 
   Widget _buildAnimatedCircle(
-      Color color, Animation<Offset> positionAnimation, int circleDepth) {
-    return LayoutBuilder(builder: (context, constraints) {
-      return AnimatedBuilder(
-        animation: Listenable.merge([
-          widget.initialTransformController,
-          widget.finalTransformController
-        ]),
-        builder: (context, child) {
-          var maxWidth = constraints.maxWidth * 0.7;
+    Color color,
+    Animation<Color?> colorAnimaton,
+    Animation<Offset> positionAnimation,
+    int circleDepth,
+  ) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return AnimatedBuilder(
+          animation: Listenable.merge([
+            widget.initialTransformController,
+            widget.finalTransformController
+          ]),
+          builder: (context, child) {
+            var maxWidth = constraints.maxWidth * 0.7;
 
-          double height = 56.0 + 150.0 * _finalTransfomAnimatino.value;
-          double width = 56 +
-              maxWidth * (1 - _initialTransformAnimation.value) +
-              maxWidth * _finalTransfomAnimatino.value;
+            double height = 56.0 + 150.0 * _finalTransfomAnimation.value;
+            double width = 56 +
+                maxWidth * (1 - _initialTransformAnimation.value) +
+                maxWidth * _finalTransfomAnimation.value;
 
-          double borderRadius =
-              25.0 * (1 - widget.finalTransformController.value) + 20;
+            double borderRadius =
+                25.0 * (1 - widget.finalTransformController.value) + 20;
 
-          bool showWinText =
-              _finalTransfomAnimatino.status == AnimationStatus.completed &&
-                  borderRadius == 20;
+            bool showWinText =
+                _finalTransfomAnimation.status == AnimationStatus.completed &&
+                    borderRadius == 20;
 
-          Widget? winWidget;
+            Widget? winWidget;
 
-          if (showWinText && widget.win != null) {
-            winWidget = Container(
-              width: double.infinity,
-              padding:
-                  const EdgeInsets.symmetric(vertical: 16.0, horizontal: 16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(
-                    child: SingleChildScrollView(
-                      child: MyText(
-                        widget.win!.notes,
-                        style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                              color: Theme.of(context).colorScheme.onPrimary,
-                            ),
-                      ),
-                    ),
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      MyText(
-                        widget.win!.formattedDate,
-                        style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                              color: Theme.of(context).colorScheme.onPrimary,
-                            ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            );
-          }
-
-          // if the there is no animation in progress set the winWindert to celebration icon
-          if (widget.rotationAnimationController.status ==
-                  AnimationStatus.dismissed &&
-              widget.finalTransformController.status ==
-                  AnimationStatus.dismissed) {
-            winWidget = SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Center(
-                child: Padding(
-                  padding: const EdgeInsets.all(2.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        Icons.celebration,
-                        color: Theme.of(context).colorScheme.onPrimary,
-                        size: 25,
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            if (showWinText && widget.win != null) {
+              winWidget = Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(
+                    vertical: 16.0, horizontal: 16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: SingleChildScrollView(
                         child: MyText(
-                          "Surprise Me!",
-                          style: TextStyle(
-                            color: Theme.of(context).colorScheme.onPrimary,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 20.0,
-                          ),
+                          widget.win!.notes,
+                          style: Theme.of(context)
+                              .textTheme
+                              .bodyLarge!
+                              .copyWith(
+                                color: Theme.of(context).colorScheme.onPrimary,
+                              ),
                         ),
                       ),
-                      Icon(
-                        Icons.celebration,
-                        color: Theme.of(context).colorScheme.onPrimary,
-                        size: 25,
-                      )
-                    ],
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        MyText(
+                          widget.win!.formattedDate,
+                          style: Theme.of(context)
+                              .textTheme
+                              .bodyMedium!
+                              .copyWith(
+                                color: Theme.of(context).colorScheme.onPrimary,
+                              ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              );
+            }
+
+            // if the there is no animation in progress set the winWindert to celebration icon
+            if (widget.rotationAnimationController.status ==
+                    AnimationStatus.dismissed &&
+                widget.finalTransformController.status ==
+                    AnimationStatus.dismissed) {
+              winWidget = SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(2.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.celebration,
+                          color: Theme.of(context).colorScheme.onPrimary,
+                          size: 25,
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                          child: MyText(
+                            "Surprise Me!",
+                            style: TextStyle(
+                              color: Theme.of(context).colorScheme.onPrimary,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 20.0,
+                            ),
+                          ),
+                        ),
+                        Icon(
+                          Icons.celebration,
+                          color: Theme.of(context).colorScheme.onPrimary,
+                          size: 25,
+                        )
+                      ],
+                    ),
+                  ),
+                ),
+              );
+            }
+
+            return Transform.translate(
+              offset: positionAnimation.value,
+              child: Container(
+                width: max(0, width),
+                height: max(0, height),
+                decoration: BoxDecoration(
+                  color: colorAnimaton.value,
+                  borderRadius: BorderRadius.circular(borderRadius),
+                ),
+                child: FloatingActionButton(
+                  heroTag: ValueKey(color),
+                  onPressed: widget.onTriggerAnimation,
+                  backgroundColor: colorAnimaton.value,
+                  elevation: winWidget != null && circleDepth == 2 ? 1.0 : 0.0,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(borderRadius),
+                  ),
+                  child: AnimatedOpacity(
+                    opacity: widget.initialTransformController.isAnimating ||
+                            widget.rotationAnimationController.isAnimating ||
+                            widget.finalTransformController.isAnimating
+                        ? 0.0
+                        : 1.0,
+                    duration: const Duration(milliseconds: 150),
+                    child: winWidget,
                   ),
                 ),
               ),
             );
-          }
-
-          return Transform.translate(
-            offset: positionAnimation.value,
-            child: Container(
-              width: max(0, width),
-              height: max(0, height),
-              decoration: BoxDecoration(
-                color: color,
-                borderRadius: BorderRadius.circular(borderRadius),
-              ),
-              child: FloatingActionButton(
-                heroTag: ValueKey(color),
-                onPressed: widget.onTriggerAnimation,
-                backgroundColor: color,
-                elevation: winWidget != null && circleDepth == 2 ? 1.0 : 0.0,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(borderRadius),
-                ),
-                child: AnimatedOpacity(
-                  opacity: widget.initialTransformController.isAnimating ||
-                          widget.rotationAnimationController.isAnimating ||
-                          widget.finalTransformController.isAnimating
-                      ? 0.0
-                      : 1.0,
-                  duration: const Duration(milliseconds: 150),
-                  child: winWidget,
-                ),
-              ),
-            ),
-          );
-        },
-      );
-    });
+          },
+        );
+      },
+    );
   }
 }

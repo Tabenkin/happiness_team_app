@@ -76,9 +76,11 @@ class _MyButtonState extends State<MyButton> {
           color: widget.filled
               ? backgroundColor
               : Colors.transparent, // Use the background color if filled
+
           borderRadius: BorderRadius.circular(
               25), // Border radius for the Material widget
           child: InkWell(
+            splashColor: theme.colorScheme.surface,
             borderRadius: BorderRadius.circular(
                 25), // Match the border radius for the ripple effect
             onTap: widget.showSpinner ? null : widget.onTap,

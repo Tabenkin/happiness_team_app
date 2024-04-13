@@ -7,12 +7,36 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:274381462997:android:6816c68949f29e2bf4b15c",
+        "mobilesdk_app_id": "1:274381462997:android:e0e8a4e018d94744f4b15c",
         "android_client_info": {
-          "package_name": "com.team.happinessTeamApp"
+          "package_name": "com.team.happiness_team_app"
         }
       },
       "oauth_client": [
+        {
+          "client_id": "274381462997-3ia0p61vdqm3jnqlii7iestkfg3dulic.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.team.happiness_team_app",
+            "certificate_hash": "ceadbdf9b557cfbc7fc689ac3f4949a532eb85f8"
+          }
+        },
+        {
+          "client_id": "274381462997-7ifrpn0s315fa02mgghands29pkviros.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.team.happiness_team_app",
+            "certificate_hash": "c01cf8d9ed7568f6c2ad206d17c4681a9620991c"
+          }
+        },
+        {
+          "client_id": "274381462997-qvb4lidcgtabtbebqip6h7ee3m2epj6e.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.team.happiness_team_app",
+            "certificate_hash": "9600d24854b5f0e78d8b5eab761b47d580842d67"
+          }
+        },
         {
           "client_id": "274381462997-a7f2gseuup3ta6033fkbokgove2umto2.apps.googleusercontent.com",
           "client_type": 3

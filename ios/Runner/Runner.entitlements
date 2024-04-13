@@ -8,5 +8,10 @@
 	<array>
 		<string>Default</string>
 	</array>
+	<key>com.apple.developer.associated-domains</key>
+	<array>
+		<string>applinks:sfbyw.app.link</string>
+		<string>applinks:sfbyw-alternate.app.link</string>
+	</array>
 </dict>
 </plist>

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -5,6 +7,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:happiness_team_app/widgets/my_button.widget.dart';
 import 'package:happiness_team_app/happiness_theme.dart';
+import 'package:happiness_team_app/widgets/my_text.widget.dart';
 
 class GoogleSigninButton extends StatefulWidget {
   final String label;
@@ -32,9 +35,8 @@ class _GoogleSigninButtonState extends State<GoogleSigninButton> {
       });
 
       final GoogleSignInAccount? googleUser = await GoogleSignIn(
-              clientId:
-                  "274381462997-5ikvkn9igit2our3cg7octfp80sljqmn.apps.googleusercontent.com")
-          .signIn();
+        clientId: Platform.isAndroid ? "274381462997-a7f2gseuup3ta6033fkbokgove2umto2.apps.googleusercontent.com" : null,
+      ).signIn();
 
       final GoogleSignInAuthentication? googleAuth =
           await googleUser?.authentication;
@@ -54,11 +56,12 @@ class _GoogleSigninButtonState extends State<GoogleSigninButton> {
 
       widget.onSuccess(isNewUser, response.user);
     } catch (error) {
+      print("Error signing in with Google: $error");
+      print(error);
+
       setState(() {
         _isProcessing = false;
       });
-
-      print("Error google signing $error");
 
       widget.onError();
     }
@@ -84,7 +87,12 @@ class _GoogleSigninButtonState extends State<GoogleSigninButton> {
           const SizedBox(
             width: 16,
           ),
-          Text("${widget.label} with Google"),
+          MyText(
+            "${widget.label} with Google",
+            style: TextStyle(
+              color: theme.onGoogle,
+            ),
+          ),
         ],
       ),
     );

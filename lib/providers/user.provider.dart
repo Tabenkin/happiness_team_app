@@ -1,6 +1,8 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -8,7 +10,6 @@ import 'package:happiness_team_app/helpers/functions.helpers.dart';
 import 'package:happiness_team_app/models/app_user.model.dart';
 import 'package:happiness_team_app/models/notification_device.model.dart';
 import 'package:happiness_team_app/services/auth.service.dart';
-import 'package:platform_device_id/platform_device_id.dart';
 
 class UserProvider with ChangeNotifier {
   AppUser? _user;
@@ -48,7 +49,7 @@ class UserProvider with ChangeNotifier {
 
     await initializeUserClaims();
 
-    _deviceId = await PlatformDeviceId.getDeviceId ?? '';
+    _deviceId = await _getId();
 
     if (_userSubscription != null) {
       _userSubscription!.cancel();
@@ -71,20 +72,50 @@ class UserProvider with ChangeNotifier {
     });
   }
 
+  Future<String?> _getId() async {
+    var deviceInfo = DeviceInfoPlugin();
+    if (Platform.isIOS) {
+      // import 'dart:io'
+      var iosDeviceInfo = await deviceInfo.iosInfo;
+      return iosDeviceInfo.identifierForVendor; // unique ID on iOS
+    } else if (Platform.isAndroid) {
+      var androidDeviceInfo = await deviceInfo.androidInfo;
+      return '${androidDeviceInfo.model}:${androidDeviceInfo.id}'; // unique ID on Android
+    }
+    return null;
+  }
 
   // After some trial an error, I discovered that if we don't request permission and call getToken on every app start, then push notifications stop working
   // After the user taps the first one.
   Future<void> refreshPushNotifications() async {
-    await FirebaseMessaging.instance.requestPermission(
+    var user = _user;
+
+    if (user == null) return;
+
+    if (user.allowPushNotifications != true) return;
+
+    var response = await FirebaseMessaging.instance.requestPermission(
       alert: true,
       badge: true,
       provisional: false,
     );
 
-    await FirebaseMessaging.instance.getToken();
+    print("Request permission ");
+
+    print(response);
+
+    var token = await FirebaseMessaging.instance.getToken();
+
+    print("Token: $token");
   }
 
   Future<void> requestPushNotificationPermissions() async {
+    if (_user == null) return;
+
+    _user!.allowPushNotifications = true;
+
+    await _user!.save();
+
     NotificationSettings settings =
         await FirebaseMessaging.instance.requestPermission(
       alert: true,

@@ -54,7 +54,21 @@
 
 ## General
 
-## Apple
+# Android
+
+This article is helpful for android specific setup:
+https://docs.flutter.dev/deployment/android
+
+1. Run this command to generate the upload-keystore
+- Note this should only need to be done once
+
+```
+keytool -genkey -v -keystore ~/upload-keystore.jks -keyalg RSA \
+        -keysize 2048 -validity 10000 -alias upload
+
+```
+
+2. Keystore credentials and details are located in /android/key.properties
 
 
 # Auto Route
@@ -63,3 +77,29 @@ flutter packages pub run build_runner watch
 or 
 
 flutter packages pub run build_runner build                    
+
+# Branch.io Configuration
+
+1. In the branch.io configuration page, the Apple App Prefix is Joseph's TeamId and should be replaced if the app is transferred to another developer.
+
+2. TODO: Replace the app store listing with Happiness Team app (currently set to Read With Me for basic functionality)
+
+# Google Signin Android
+
+You need to register your debug and release SHA-1 and SHA-256 values in the Firebase Android project settings. Here's how you can obtain those using Android Studio:
+
+1. Open Android Studio and load your project.
+2. In the right sidebar, you will find the Gradle tab. Click on it.
+3. You'll see a panel open with the structure of your project's Gradle scripts.
+4. Navigate through the list following this path: YourProject -> Tasks -> android -> signingReport.
+5. Double click on signingReport. This will run the task.
+6. After a while, you'll see the results in the Run tab located at the bottom of Android Studio.
+7. Copy the SHA1 and SHA-256 values to the firebase console
+- Navigate to Project Settings
+- Select the android app
+- Click "Add fingerprint"
+
+
+keytool -list -v -alias upload -keystore ./upload-keystore.jks
+
+A1fw^5pnU&RJBso!

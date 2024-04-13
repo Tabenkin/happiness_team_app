@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:happiness_team_app/helpers/dialog.helpers.dart';
 import 'package:happiness_team_app/providers/user.provider.dart';
 import 'package:happiness_team_app/widgets/my_button.widget.dart';
 import 'package:happiness_team_app/widgets/my_text.widget.dart';
@@ -25,15 +26,39 @@ class _WelcomeNotificationsSetupPageState
   @override
   void initState() {
     _userProvider = Provider.of<UserProvider>(context, listen: false);
+    _userProvider.currentUser.allowPushNotifications = true;
 
     super.initState();
+  }
+
+  _next() {
+    if (_userProvider.currentUser.allowPushNotifications == true) {
+      _requestPushNotificationPermission();
+    } else {
+      _confirmNotificationPermission();
+    }
+  }
+
+  _confirmNotificationPermission() async {
+    var response = await DialogHelper.showConfirmDialog(
+      context,
+      title: "Are you sure?",
+      message:
+          "Woah. Hold on there, partner! Are you sure? This app works best when it can remind you of your awesome wins. 🤠",
+    );
+
+    if (response == false) {
+      return;
+    }
+
+    widget.onNextPage();
   }
 
   _requestPushNotificationPermission() async {
     setState(() {
       _isSaving = true;
     });
-    _userProvider.requestPushNotificationPermissions();
+    await _userProvider.requestPushNotificationPermissions();
 
     setState(() {
       _isSaving = false;
@@ -77,27 +102,43 @@ class _WelcomeNotificationsSetupPageState
             const SizedBox(
               height: 32.0,
             ),
+            Row(
+              children: [
+                Switch(
+                  value:
+                      _userProvider.currentUser.allowPushNotifications == true,
+                  onChanged: (_) {
+                    setState(
+                      () {
+                        _userProvider.currentUser.allowPushNotifications =
+                            !_userProvider.currentUser.allowPushNotifications;
+                      },
+                    );
+                  },
+                ),
+                const SizedBox(
+                  width: 8.0,
+                ),
+                Flexible(
+                  child: MyText(
+                    "Enable Push Notifications",
+                    style: Theme.of(context).textTheme.bodyLarge,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(
+              height: 32.0,
+            ),
             MyButton(
-              onTap: _requestPushNotificationPermission,
+              onTap: _next,
               showSpinner: _isSaving,
               child: const Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.notification_add),
-                  SizedBox(
-                    width: 8.0,
-                  ),
-                  Text("Enable Push Notifications"),
+                  Text("Next"),
                 ],
               ),
-            ),
-            const SizedBox(
-              height: 4,
-            ),
-            MyButton(
-              filled: false,
-              onTap: widget.onNextPage,
-              child: const Text("skip"),
             ),
           ],
         ),

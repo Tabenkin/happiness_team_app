@@ -3,6 +3,7 @@ import 'package:happiness_team_app/happiness_theme.dart';
 import 'package:happiness_team_app/helpers/functions.helpers.dart';
 import 'package:happiness_team_app/models/win.model.dart';
 import 'package:happiness_team_app/screens/home/grouped_wins_grid.dart';
+import 'package:happiness_team_app/widgets/my_text.widget.dart';
 import 'package:sliver_tools/sliver_tools.dart';
 
 class MonthlyGroupedWins extends StatefulWidget {
@@ -59,7 +60,7 @@ class _MonthlyGroupedWinsState extends State<MonthlyGroupedWins> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
+                MyText(
                   year,
                   style: Theme.of(context).textTheme.titleLarge!.copyWith(
                         color: Theme.of(context).colorScheme.primary,

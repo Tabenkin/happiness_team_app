@@ -36,8 +36,6 @@ final ThemeData happinessTheme = ThemeData(
   ),
 
   hintColor: const Color(0xFF92949c),
-  highlightColor: const Color(0xffA73A37),
-  // splashColor: const Color(0xffA73A37),
 
   // Example of customizing a widget directly within the theme
   floatingActionButtonTheme: const FloatingActionButtonThemeData(

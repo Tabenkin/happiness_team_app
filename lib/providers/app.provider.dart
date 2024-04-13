@@ -43,9 +43,8 @@ class AppProvider with ChangeNotifier {
     if (isLoggedIn) {
       await _userProvider.fetchUser();
       _winsProvider.initializeWins();
+      await _userProvider.refreshPushNotifications();
     }
-
-    await _userProvider.refreshPushNotifications();
   }
 
   Future<void> onAppStart() async {

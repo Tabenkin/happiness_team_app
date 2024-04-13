@@ -41,7 +41,7 @@ class _MainDrawerState extends State<MainDrawer> {
                   const SizedBox(
                     height: 32.0,
                   ),
-                  Text(
+                  MyText(
                     "Tools",
                     style: Theme.of(context).textTheme.bodyLarge!.copyWith(
                         color: Theme.of(context).colorScheme.primary,
@@ -59,7 +59,7 @@ class _MainDrawerState extends State<MainDrawer> {
                         SizedBox(
                           width: 8.0,
                         ),
-                        Text("Wins"),
+                        MyText("Wins"),
                       ],
                     ),
                     onTap: () {
@@ -85,13 +85,36 @@ class _MainDrawerState extends State<MainDrawer> {
                         SizedBox(
                           width: 8.0,
                         ),
-                        Text("Settings"),
+                        MyText("Settings"),
                       ],
                     ),
                     onTap: () {
                       Navigator.of(context).pop();
                       context.router.push(const SettingsRoute());
                     },
+                  ),
+                  const SizedBox(
+                    height: 16.0,
+                  ),
+                  MyButton(
+                    textSize: 22.0,
+                    filled: false,
+                    child: const Row(
+                      children: [
+                        Icon(Icons.feedback),
+                        SizedBox(
+                          width: 8.0,
+                        ),
+                        MyText("Feedback"),
+                      ],
+                    ),
+                    onTap: () {
+                      Navigator.of(context).pop();
+                      context.router.push(const FeedBackRoute());
+                    },
+                  ),
+                  const SizedBox(
+                    height: 16.0,
                   ),
                   MyButton(
                     textSize: 22.0,
@@ -101,13 +124,17 @@ class _MainDrawerState extends State<MainDrawer> {
                       AuthService.logout();
                       context.router.replace(const AuthRoute());
                     },
-                    child: const Row(
+                    child: Row(
                       children: [
-                        Icon(Icons.logout),
-                        SizedBox(
+                        const Icon(Icons.logout),
+                        const SizedBox(
                           width: 8.0,
                         ),
-                        Text("Logout"),
+                        MyText(
+                          "Logout",
+                          style: TextStyle(
+                              color: Theme.of(context).colorScheme.error),
+                        ),
                       ],
                     ),
                   ),

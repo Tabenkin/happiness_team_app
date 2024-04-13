@@ -27,7 +27,9 @@ class AuthStateProvider with ChangeNotifier {
   }
 
   logout(BuildContext context) {
-    FirebaseAuth.instance.signOut();
+    try {
+      FirebaseAuth.instance.signOut();
+    } catch (error) {}
 
     context.router.replace(const AuthRoute());
   }

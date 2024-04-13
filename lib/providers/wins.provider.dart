@@ -136,8 +136,8 @@ class WinsProvider with ChangeNotifier {
 
   Stream<String?> get streamRandomWinTriggers => _triggerRandomWin.stream;
 
-  triggerRandomWin() {
-    _triggerRandomWin.add("trigger");
+  triggerRandomWin(String winId) {
+    _triggerRandomWin.add(winId);
   }
 
   clearRandomWinEvents() {

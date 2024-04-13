@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'dart:math';
 
 import 'package:auto_route/auto_route.dart';
@@ -12,6 +13,7 @@ import 'package:happiness_team_app/components/winning_wheel/winning_wheel_animat
 import 'package:happiness_team_app/helpers/dialog.helpers.dart';
 import 'package:happiness_team_app/models/win.model.dart';
 import 'package:happiness_team_app/providers/auth_state.provider.dart';
+import 'package:happiness_team_app/providers/user.provider.dart';
 import 'package:happiness_team_app/providers/wins.provider.dart';
 import 'package:happiness_team_app/components/win_list/win_card.widget.dart';
 import 'package:happiness_team_app/screens/home/grouped_wins_grid.dart';
@@ -20,6 +22,7 @@ import 'package:happiness_team_app/screens/home/grouping_header.widget.dart';
 import 'package:happiness_team_app/screens/home/grouping_tabs.widget.dart';
 import 'package:happiness_team_app/screens/home/main_drawer.dart';
 import 'package:happiness_team_app/screens/home/monthly_grouped_wins.dart';
+import 'package:happiness_team_app/screens/home/push_notification_reminder.widget.dart';
 import 'package:happiness_team_app/screens/home/win_progress.dart';
 import 'package:happiness_team_app/services/auth.service.dart';
 import 'package:happiness_team_app/widgets/my_animated_add_icon.widget.dart';
@@ -27,6 +30,7 @@ import 'package:happiness_team_app/widgets/my_button.widget.dart';
 import 'package:happiness_team_app/widgets/my_text.widget.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:rate_my_app/rate_my_app.dart';
 import 'package:sliver_tools/sliver_tools.dart';
 
 @RoutePage()
@@ -66,7 +70,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
   final List<Color> circleColors = [
     const Color(0xFFA4DDF8), // Light Blue
-    const Color(0xFFFAAC3E), // Orange
+    const Color(0xFFF7941D), // Orange
     const Color(0xFFA73A36), // Red
     const Color(0xFF136478), // Dark Blue
   ];
@@ -75,6 +79,13 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   bool _showCross = false;
 
   _onTriggerAnimation() {
+    // If any of the animation controller are active then block the function from running
+    if (_initialTransformController.isAnimating ||
+        _rotationAnimationController.isAnimating ||
+        _finalTransformController.isAnimating) {
+      return;
+    }
+
     if (_shouldMoveForward == true) {
       _forward();
       _shouldMoveForward = false;
@@ -89,7 +100,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
   _getRandomWin() {
     var wins = Provider.of<WinsProvider>(context, listen: false).wins.value;
-    if (wins.isNotEmpty) {
+    if (wins.isNotEmpty && _win == null) {
       var randomIndex = Random().nextInt(wins.length);
       _win = wins[randomIndex];
     }
@@ -114,6 +125,12 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     // Assign depth based on the new random index
     circleDepths.forEach((key, value) {
       circleDepths[key] = (key == newRandomIndex) ? 2 : 1;
+    });
+  }
+
+  _resetDepths() {
+    setState(() {
+      circleDepths = {0: 1, 1: 1, 2: 1, 3: 2};
     });
   }
 
@@ -156,6 +173,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   }
 
   _reverse() {
+    _win = null;
     _initialTransformController.reverse();
     _finalTransformController.reverse();
 
@@ -164,10 +182,27 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         setState(() {
           _showCross = false;
         });
+
+        // Ok here is where I can reset the depths I think?
+        _resetDepths();
       }
 
       _finalTransformController.removeStatusListener((listener) {});
     });
+  }
+
+  _checkShowNotificaitonReminder() {
+    var user = Provider.of<UserProvider>(context, listen: false).currentUser;
+
+    if (user.allowPushNotifications == true) return;
+    WidgetsBinding.instance.addPostFrameCallback(
+      (timeStamp) {
+        DialogHelper.showBottomSheetModal(
+          context,
+          child: const PushNotificationReminder(),
+        );
+      },
+    );
   }
 
   @override
@@ -190,8 +225,15 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     _winsProvider = Provider.of<WinsProvider>(context, listen: false);
 
     _randomWinTriggerSubscription =
-        _winsProvider.streamRandomWinTriggers.listen((event) {
-      if (event == null) return;
+        _winsProvider.streamRandomWinTriggers.listen((winId) {
+      if (winId == null) return;
+
+      var winIndex =
+          _winsProvider.wins.value.indexWhere((element) => element.id == winId);
+
+      if (winIndex < 0) return;
+
+      _win = _winsProvider.wins.value[winIndex];
 
       _onTriggerAnimation();
       _winsProvider.clearRandomWinEvents();
@@ -207,7 +249,40 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       _winsProvider.clearAddWinEvents();
     });
 
+    _checkShowNotificaitonReminder();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) => _checkAndShowRatings());
+
     super.initState();
+  }
+
+  _checkAndShowRatings() {
+    var rateMyApp = RateMyApp(
+      preferencesPrefix: 'happinessTeamApp_',
+      minDays: 7,
+      minLaunches: 5,
+      googlePlayIdentifier: "com.team.happinessTeamApp",
+      appStoreIdentifier: "6477689152",
+    );
+
+    rateMyApp.init().then((_) async {
+      if (rateMyApp.shouldOpenDialog) {
+        await rateMyApp.showRateDialog(
+          context,
+          title: "Enjoying the app?",
+          message: "Please leave a rating!",
+          dialogStyle: const DialogStyle(
+            titleAlign: TextAlign.center,
+            messageAlign: TextAlign.center,
+          ),
+          ignoreNativeDialog: Platform.isAndroid,
+          // starRatingOptions: const StarRatingOptions(),
+          onDismissed: () {
+            rateMyApp.save().then((_) {});
+          },
+        );
+      }
+    });
   }
 
   @override
@@ -217,6 +292,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     _initialTransformController.dispose();
     _rotationAnimationController.dispose();
     _finalTransformController.dispose();
+
     super.dispose();
   }
 
@@ -255,6 +331,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     showCross: _showCross == true,
                   ),
                 ),
+              const SizedBox(
+                height: 8.0,
+              ),
             ],
           ),
           floatingActionButtonLocation:

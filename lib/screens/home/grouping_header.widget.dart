@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:happiness_team_app/providers/wins.provider.dart';
 import 'package:happiness_team_app/screens/home/grouping_tabs.widget.dart';
+import 'package:provider/provider.dart';
 
 class GroupingHeader extends StatelessWidget {
   final double height;
@@ -9,12 +11,17 @@ class GroupingHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SliverPersistentHeader(
-      pinned: true,
-      delegate: _GroupingHeaderDelegate(
-        height: height,
-        child: const GroupingTabs(), // Your custom GroupingTabs widget
-      ),
+    return ValueListenableBuilder(
+      valueListenable: Provider.of<WinsProvider>(context, listen: false).tabs,
+      builder: (context, tabs, _) {
+        return SliverPersistentHeader(
+          pinned: true,
+          delegate: _GroupingHeaderDelegate(
+            height: tabs.isNotEmpty ? height : 8,
+            child: const GroupingTabs(), // Your custom GroupingTabs widget
+          ),
+        );
+      }
     );
   }
 }

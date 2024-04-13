@@ -5,7 +5,7 @@ import 'package:happiness_team_app/models/win.model.dart';
 import 'package:happiness_team_app/widgets/my_text.widget.dart';
 import 'package:share_plus/share_plus.dart';
 
-class WinCard extends StatelessWidget {
+class WinCard extends StatefulWidget {
   final Win win;
   final Function() onEdit;
 
@@ -15,8 +15,19 @@ class WinCard extends StatelessWidget {
     Key? key,
   }) : super(key: key);
 
-  _shareWin() {
-    Share.share("Check out my win! ${win.notes}");
+  @override
+  State<WinCard> createState() => _WinCardState();
+}
+
+class _WinCardState extends State<WinCard> {
+  _shareWin() async {
+    final box = context.findRenderObject() as RenderBox?;
+
+    await Share.share(
+      "Check out my win! ${widget.win.notes}",
+      subject: "Check out my win!",
+      sharePositionOrigin: box!.localToGlobal(Offset.zero) & box.size,
+    );
   }
 
   @override
@@ -28,7 +39,7 @@ class WinCard extends StatelessWidget {
         children: [
           SlidableAction(
             onPressed: (ctx) {
-              win.delete();
+              widget.win.delete();
             },
             backgroundColor: Theme.of(context).colorScheme.error,
             icon: Icons.delete,
@@ -51,14 +62,14 @@ class WinCard extends StatelessWidget {
           ),
           child: InkWell(
             borderRadius: BorderRadius.circular(8.0),
-            onTap: onEdit,
+            onTap: widget.onEdit,
             child: Padding(
               padding: const EdgeInsets.all(16.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   MyText(
-                    win.notes,
+                    widget.win.notes,
                     style: Theme.of(context).textTheme.bodyLarge,
                   ),
                   const SizedBox(
@@ -69,7 +80,7 @@ class WinCard extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       MyText(
-                        win.formattedDate,
+                        widget.win.formattedDate,
                         style: theme.textTheme.bodyMedium!.copyWith(
                           height: 1.0,
                         ),

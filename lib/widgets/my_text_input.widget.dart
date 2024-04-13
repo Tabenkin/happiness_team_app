@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class MyTextInput extends StatefulWidget {
-  final String labelText;
+  final String? labelText;
   final String? placeholder;
   final String? initialValue;
   final TextInputType keyboardType;
@@ -11,7 +11,7 @@ class MyTextInput extends StatefulWidget {
 
   const MyTextInput({
     Key? key,
-    required this.labelText,
+    this.labelText,
     this.initialValue,
     this.placeholder,
     required this.onChanged,
@@ -42,14 +42,16 @@ class _MyTextInputState extends State<MyTextInput> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          widget.labelText,
-          style: const TextStyle(
-            fontWeight: FontWeight.bold,
-            color: Colors.black,
+        if (widget.labelText != null && widget.labelText!.isNotEmpty)
+          Text(
+            widget.labelText!,
+            style: const TextStyle(
+              fontWeight: FontWeight.bold,
+              color: Colors.black,
+            ),
           ),
-        ),
-        const SizedBox(height: 12),
+        if (widget.labelText != null && widget.labelText!.isNotEmpty)
+          const SizedBox(height: 8),
         TextField(
           controller: _controller,
           keyboardType: widget.keyboardType,

@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:happiness_team_app/providers/wins.provider.dart';
+import 'package:happiness_team_app/widgets/my_text.widget.dart';
 import 'package:multi_value_listenable_builder/multi_value_listenable_builder.dart';
 import 'package:provider/provider.dart';
 
@@ -30,8 +31,7 @@ class _GroupingTabsState extends State<GroupingTabs> {
     return Container(
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.background,
-        
-      ),      
+      ),
       padding: const EdgeInsets.all(8.0),
       child: MultiValueListenableBuilder(
         valueListenables: [
@@ -47,8 +47,9 @@ class _GroupingTabsState extends State<GroupingTabs> {
                 index++)
               index: Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: Text(
+                child: MyText(
                   _winsProvider.tabs.value[index],
+                  maxTextScale: 1.0,
                   style: TextStyle(
                     color: _winsProvider.selectedTab.value == index
                         ? Theme.of(context).colorScheme.primary
@@ -75,7 +76,7 @@ class _GroupingTabsState extends State<GroupingTabs> {
                   child: CupertinoSlidingSegmentedControl<int>(
                     children: children,
                     backgroundColor: Theme.of(context).colorScheme.tertiary,
-                    padding: const EdgeInsets.all(11.0),
+                    padding: const EdgeInsets.all(10.0),
                     onValueChanged: (int? newValue) {
                       _winsProvider.setSelectedTab(newValue ?? 0);
                     },

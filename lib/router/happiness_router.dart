@@ -22,6 +22,10 @@ class AppRouter extends $AppRouter {
           guards: [AuthGuard()],
         ),
         AutoRoute(
+          page: FeedBackRoute.page,
+          guards: [AuthGuard()],
+        ),
+        AutoRoute(
           page: PrivacyPolicyRoute.page,
         ),
       ];

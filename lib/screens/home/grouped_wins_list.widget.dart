@@ -3,6 +3,7 @@ import 'package:happiness_team_app/components/win_list/win_card.widget.dart';
 import 'package:happiness_team_app/helpers/functions.helpers.dart';
 import 'package:happiness_team_app/models/win.model.dart';
 import 'package:happiness_team_app/providers/wins.provider.dart';
+import 'package:happiness_team_app/widgets/my_text.widget.dart';
 import 'package:sliver_tools/sliver_tools.dart';
 
 class GroupedWinsList extends StatefulWidget {
@@ -39,7 +40,7 @@ class _GroupedWinsListState extends State<GroupedWinsList> {
                     children: [
                       Row(
                         children: [
-                          Text(
+                          MyText(
                             convertDateStringToNiceFormat(entry.key),
                             textAlign: TextAlign.center,
                             style: Theme.of(context)
@@ -58,56 +59,6 @@ class _GroupedWinsListState extends State<GroupedWinsList> {
                     ],
                   ),
                 ),
-                // child: Padding(
-                //   padding: const EdgeInsets.all(8.0),
-                //   child: Align(
-                //     alignment: Alignment.center,
-                //     child: Padding(
-                //       padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                //       child: PhysicalModel(
-                //         color: Theme.of(context).colorScheme.onPrimary,
-                //         borderRadius: BorderRadius.circular(20.0),
-                //         elevation: 0.0,
-                //         child: Container(
-                //           width: double.infinity,
-                //           decoration: BoxDecoration(
-                //             border: Border.all(
-                //                 color: Theme.of(context).colorScheme.primary),
-                //             borderRadius: BorderRadius.circular(20.0),
-                //             color: Theme.of(context)
-                //                 .colorScheme
-                //                 .onPrimary
-                //                 .withOpacity(0.2),
-                //           ),
-                //           padding: const EdgeInsets.symmetric(
-                //               vertical: 16.0, horizontal: 16.0),
-                //           child: Column(
-                //             children: [
-                //               Text(
-                //                 entry.key,
-                //                 textAlign: TextAlign.center,
-                //                 style: Theme.of(context)
-                //                     .textTheme
-                //                     .bodyLarge!
-                //                     .copyWith(
-                //                         color: Theme.of(context)
-                //                             .colorScheme
-                //                             .secondary),
-                //               ),
-                //               const SizedBox(
-                //                 height: 4.0,
-                //               ),
-                //               Text(
-                //                 "(${entry.value.length} wins)",
-                //                 style: Theme.of(context).textTheme.bodyMedium,
-                //               )
-                //             ],
-                //           ),
-                //         ),
-                //       ),
-                //     ),
-                //   ),
-                // ),
               ),
               SliverPadding(
                 padding: const EdgeInsets.only(

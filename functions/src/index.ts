@@ -19,19 +19,11 @@ import * as NotificationHelpers from "./notifications.helper";
 
 export const randomWinRemindersCron =
   NotificationHelpers.randomWinRemindersCron;
-export const testRandomWinsReminder =
-  NotificationHelpers.testRandomWinsReminder;
+// export const testRandomWinsReminder =
+//   NotificationHelpers.testRandomWinsReminder;
 
-import * as EmailNewsletter from "./email-newsletter.helper";
-export const winNotificationEmailsCron =
-  EmailNewsletter.winNotificationEmailsCron;
-export const testWinNotificationEmailsCron =
-  EmailNewsletter.testWinNotificationEmailsCron;
+import * as FeedbackHelpers from "./feedback.helper";
+export const sendFeedback = FeedbackHelpers.sendFeedback;
 
-// Start writing functions
-// https://firebase.google.com/docs/functions/typescript
-
-// export const helloWorld = onRequest((request, response) => {
-//   logger.info("Hello logs!", {structuredData: true});
-//   response.send("Hello from Firebase!");
-// });
+import * as AccountManagementHelpers from "./account-management.helper";
+export const onDeleteAccount = AccountManagementHelpers.onDeleteAccount;

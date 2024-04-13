@@ -127,7 +127,7 @@ class _AuthScreenState extends State<AuthScreen> {
       email: email,
       displayName: displayName,
       notificationDeviceTokens: [],
-      allowEmailNotifications: false,
+      allowEmailNotifications: true,
       allowPushNotifications: false,
       lastLoginTimestamp: DateTime.now(),
       createdOnTimestamp: DateTime.now(),
@@ -211,7 +211,7 @@ class _AuthScreenState extends State<AuthScreen> {
                         borderRadius: BorderRadius.circular(20.0),
                         color: Theme.of(context).colorScheme.error,
                       ),
-                      child: Text(
+                      child: MyText(
                         _errorMessage,
                         style: Theme.of(context).textTheme.bodyLarge!.copyWith(
                               color: Theme.of(context).colorScheme.onError,
@@ -270,7 +270,7 @@ class _AuthScreenState extends State<AuthScreen> {
                               context.router
                                   .navigate(const ResetPasswordRoute());
                             },
-                            child: Text(
+                            child: MyText(
                               "Forgot Password?",
                               style: Theme.of(context)
                                   .textTheme
@@ -291,7 +291,12 @@ class _AuthScreenState extends State<AuthScreen> {
                         child: MyButton(
                           onTap: _submit,
                           showSpinner: _isProcessing,
-                          child: Text(_isLogin ? "Sign In" : "Sign Up"),
+                          child: MyText(
+                            _isLogin ? "Sign In" : "Sign Up",
+                            style: TextStyle(
+                              color: theme.colorScheme.onPrimary,
+                            ),
+                          ),
                         ),
                       ),
                       const SizedBox(
@@ -300,12 +305,12 @@ class _AuthScreenState extends State<AuthScreen> {
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          const Text(
+                          const MyText(
                             "Don't have an account?",
                           ),
                           TextButton(
                             onPressed: _toggleAuthState,
-                            child: Text(
+                            child: MyText(
                               _isLogin ? "Sign Up" : "Sign In",
                               style: Theme.of(context)
                                   .textTheme
@@ -335,7 +340,7 @@ class _AuthScreenState extends State<AuthScreen> {
                               ),
                             ),
                             Expanded(
-                              child: Text(
+                              child: MyText(
                                 "Or",
                                 textAlign: TextAlign.center,
                                 style: Theme.of(context)
