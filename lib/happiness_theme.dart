@@ -92,8 +92,8 @@ extension CustomTheme on ThemeData {
 }
 
 extension CustomProperties on ThemeData {
-  BorderRadius get borderRadius => BorderRadius.circular(3.0);
-  double get borderRadiusValue => 3.0;
+  BorderRadius get borderRadius => BorderRadius.circular(8.0);
+  double get borderRadiusValue => 8.0;
   BoxShadow get boxShadow =>
       const BoxShadow(color: Color.fromRGBO(186, 186, 190, 1), blurRadius: 6.0);
   BoxShadow get tightBoxShadow =>

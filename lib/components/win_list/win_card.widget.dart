@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:full_screen_image/full_screen_image.dart';
 import 'package:happiness_team_app/happiness_theme.dart';
 import 'package:happiness_team_app/models/win.model.dart';
+import 'package:happiness_team_app/widgets/image_full_screen_wrapper.widget.dart';
 import 'package:happiness_team_app/widgets/my_text.widget.dart';
 import 'package:share_plus/share_plus.dart';
 
@@ -24,7 +27,7 @@ class _WinCardState extends State<WinCard> {
     final box = context.findRenderObject() as RenderBox?;
 
     await Share.share(
-      "Check out my win! ${widget.win.notes}",
+      "Check out my win from ${widget.win.formattedDate}!\n\n${widget.win.notes}\n\nI recorded this awesome win using the Happiness Team app.\n\nhttps://sfbyw.app.link/SkTrc6ajZHb",
       subject: "Check out my win!",
       sharePositionOrigin: box!.localToGlobal(Offset.zero) & box.size,
     );
@@ -54,10 +57,6 @@ class _WinCardState extends State<WinCard> {
         child: Container(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(8.0),
-            // border: Border.all(
-            //   color: Theme.of(context).colorScheme.primary,
-            //   width: 1.0,
-            // ),
             color: theme.lightBlue.withOpacity(0.4),
           ),
           child: InkWell(
@@ -68,6 +67,31 @@ class _WinCardState extends State<WinCard> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  if (widget.win.image != null)
+                    Column(
+                      children: [
+                        AspectRatio(
+                          aspectRatio: 1.5,
+                          child: Container(
+                            decoration: BoxDecoration(
+                              borderRadius: Theme.of(context).borderRadius,
+                            ),
+                            child: ClipRRect(
+                              borderRadius: Theme.of(context).borderRadius,
+                              child: ImageFullScreenWrapperWidget(
+                                child: Image.network(
+                                  widget.win.image!.mediaHref,
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 16.0,
+                        ),
+                      ],
+                    ),
                   MyText(
                     widget.win.notes,
                     style: Theme.of(context).textTheme.bodyLarge,

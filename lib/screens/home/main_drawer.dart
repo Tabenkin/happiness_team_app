@@ -119,6 +119,46 @@ class _MainDrawerState extends State<MainDrawer> {
                   MyButton(
                     textSize: 22.0,
                     filled: false,
+                    child: const Row(
+                      children: [
+                        Icon(Icons.volunteer_activism),
+                        SizedBox(
+                          width: 8.0,
+                        ),
+                        MyText("Support Us"),
+                      ],
+                    ),
+                    onTap: () {
+                      Navigator.of(context).pop();
+                      context.router.push(const ContributeRoute());
+                    },
+                  ),
+                  const SizedBox(
+                    height: 16.0,
+                  ),
+                  MyButton(
+                    textSize: 22.0,
+                    filled: false,
+                    child: const Row(
+                      children: [
+                        Icon(Icons.event),
+                        SizedBox(
+                          width: 8.0,
+                        ),
+                        MyText("Workshops"),
+                      ],
+                    ),
+                    onTap: () {
+                      Navigator.of(context).pop();
+                      context.router.push(const WorkshopsRoute());
+                    },
+                  ),
+                  const SizedBox(
+                    height: 16.0,
+                  ),
+                  MyButton(
+                    textSize: 22.0,
+                    filled: false,
                     color: MyButtonColor.error,
                     onTap: () {
                       AuthService.logout();

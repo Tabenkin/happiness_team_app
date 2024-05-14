@@ -72,7 +72,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     const Color(0xFFA4DDF8), // Light Blue
     const Color(0xFFF7941D), // Orange
     const Color(0xFFA73A36), // Red
-    const Color(0xFF136478), // Dark Blue
+    const Color(0xFF0C5363), // Dark Blue
   ];
 
   bool _shouldMoveForward = true;
@@ -314,6 +314,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   circleColors: circleColors,
                   circleDepths: circleDepths,
                   win: _win,
+                  onAddWin: _addWin,
                   onTriggerAnimation: _onTriggerAnimation,
                 ),
               if (wins.length >= 10)

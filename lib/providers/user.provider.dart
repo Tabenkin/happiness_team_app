@@ -94,19 +94,13 @@ class UserProvider with ChangeNotifier {
 
     if (user.allowPushNotifications != true) return;
 
-    var response = await FirebaseMessaging.instance.requestPermission(
+    await FirebaseMessaging.instance.requestPermission(
       alert: true,
       badge: true,
       provisional: false,
     );
 
-    print("Request permission ");
-
-    print(response);
-
-    var token = await FirebaseMessaging.instance.getToken();
-
-    print("Token: $token");
+    await FirebaseMessaging.instance.getToken();
   }
 
   Future<void> requestPushNotificationPermissions() async {

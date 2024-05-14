@@ -26,6 +26,18 @@ class AppRouter extends $AppRouter {
           guards: [AuthGuard()],
         ),
         AutoRoute(
+          page: ContributeRoute.page,
+          guards: [AuthGuard()],
+        ),
+        AutoRoute(
+          page: ContributionThankYouRoute.page,
+          guards: [AuthGuard()],
+        ),
+        AutoRoute(
+          page: WorkshopsRoute.page,
+          guards: [AuthGuard()],
+        ),
+        AutoRoute(
           page: PrivacyPolicyRoute.page,
         ),
       ];

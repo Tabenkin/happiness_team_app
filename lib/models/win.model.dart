@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:happiness_team_app/models/media_object.model.dart';
 import 'package:intl/intl.dart';
 
 typedef Wins = List<Win>;
@@ -9,6 +10,7 @@ class Win {
   DateTime date;
   String notes;
   int lastViewedTimestamp;
+  MediaObject? image;
 
   Win({
     this.id,
@@ -16,6 +18,7 @@ class Win {
     required this.date,
     required this.notes,
     required this.lastViewedTimestamp,
+    this.image,
   });
 
   Map<String, dynamic> toMap() {
@@ -24,6 +27,7 @@ class Win {
       'date': date.millisecondsSinceEpoch,
       'notes': notes,
       'lastViewedTimestamp': lastViewedTimestamp,
+      'image': image?.toMap(),
     };
   }
 
@@ -34,6 +38,7 @@ class Win {
       date: DateTime.fromMillisecondsSinceEpoch(map['date']),
       notes: map['notes'],
       lastViewedTimestamp: map['lastViewedTimestamp'],
+      image: map['image'] != null ? MediaObject.fromMap(map['image']) : null,
     );
   }
 
