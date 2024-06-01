@@ -256,9 +256,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
     _checkShowNotificaitonReminder();
 
-
-    _animateShareButton = Provider.of<UserProvider>(context, listen: false).remindUserToShare;
-
+    _animateShareButton =
+        Provider.of<UserProvider>(context, listen: false).remindUserToShare;
 
     WidgetsBinding.instance.addPostFrameCallback((_) => _checkAndShowRatings());
 
@@ -376,22 +375,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 color: Theme.of(context).colorScheme.primary,
               ),
             ),
-            actions: [
-              AvatarGlow(
-                animate: _animateShareButton,
-                glowColor: _animateShareButton
-                    ? Theme.of(context).colorScheme.tertiary
-                    : Theme.of(context).colorScheme.background,
-                glowCount: 3,
-                glowRadiusFactor: 0.3,
-                child: IconButton(
-                  onPressed: _shareApp,
-                  icon: Icon(
-                    Platform.isIOS ? Icons.ios_share : Icons.share,
-                  ),
-                ),
-              ),
-            ],
             flexibleSpace: FlexibleSpaceBar(
               titlePadding: const EdgeInsets.symmetric(vertical: 16.0),
               centerTitle: true,

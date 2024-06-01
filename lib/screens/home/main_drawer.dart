@@ -1,6 +1,8 @@
+import 'dart:io';
 import 'dart:math';
 
 import 'package:auto_route/auto_route.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/material.dart';
 import 'package:happiness_team_app/happiness_theme.dart';
@@ -8,6 +10,7 @@ import 'package:happiness_team_app/router/happiness_router.gr.dart';
 import 'package:happiness_team_app/services/auth.service.dart';
 import 'package:happiness_team_app/widgets/my_button.widget.dart';
 import 'package:happiness_team_app/widgets/my_text.widget.dart';
+import 'package:share_plus/share_plus.dart';
 
 class MainDrawer extends StatefulWidget {
   const MainDrawer({
@@ -157,6 +160,34 @@ class _MainDrawerState extends State<MainDrawer> {
                     onTap: () {
                       Navigator.of(context).pop();
                       context.router.push(const WorkshopsRoute());
+                    },
+                  ),
+                  MyButton(
+                    textSize: 22.0,
+                    filled: false,
+                    child: Row(
+                      children: [
+                        Icon(
+                          Platform.isIOS ? Icons.ios_share : Icons.share,
+                        ),
+                        const SizedBox(
+                          width: 8.0,
+                        ),
+                        const MyText("Share the App"),
+                      ],
+                    ),
+                    onTap: () async {
+                      final box = context.findRenderObject() as RenderBox?;
+
+                      await Share.share(
+                        "Hi!\n\nThis is the Happiness Team app I was telling you about. You enter your wins and it reminds you of how awesome you are. And since you are awesome, I thought you would like to check it out.\n\nhttps://sfbyw.app.link/SkTrc6ajZHb",
+                        subject: "Check out the Happiness App!",
+                        sharePositionOrigin:
+                            box!.localToGlobal(Offset.zero) & box.size,
+                      );
+
+                      await FirebaseAnalytics.instance
+                          .logEvent(name: "share_app");
                     },
                   ),
                   const SizedBox(
