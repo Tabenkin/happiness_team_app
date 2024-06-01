@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:device_info_plus/device_info_plus.dart';
@@ -178,6 +179,37 @@ class UserProvider with ChangeNotifier {
 
   AppUser? get user {
     return _user;
+  }
+
+  bool get remindUserToShare {
+    var user = _user;
+
+    if (user == null) return true;
+
+    var lastAskedToShareTimestamp = user.lastAskedToShareTimestamp;
+
+    if (lastAskedToShareTimestamp == null) {
+      user.lastAskedToShareTimestamp = DateTime.now();
+      user.save();
+
+      return true;
+    }
+
+    // Generate an umber between 5 and 8
+    Random random = Random();
+    var days = 5 + random.nextInt((8 - 5) + 1);
+
+    var isBefore = lastAskedToShareTimestamp
+        .isBefore(DateTime.now().subtract(Duration(days: days)));
+
+    if (isBefore) {
+      user.lastAskedToShareTimestamp = DateTime.now();
+      user.save();
+
+      return true;
+    }
+
+    return false;
   }
 
   clearUserData() {

@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:auto_route/auto_route.dart';
+import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/material.dart';
 import 'package:happiness_team_app/happiness_theme.dart';
 import 'package:happiness_team_app/router/happiness_router.gr.dart';
@@ -21,6 +22,9 @@ class _MainDrawerState extends State<MainDrawer> {
   @override
   Widget build(BuildContext context) {
     var theme = Theme.of(context);
+
+    bool enableContributions =
+        FirebaseRemoteConfig.instance.getBool("enable_contributions");
 
     return Drawer(
       backgroundColor: Theme.of(context).colorScheme.background,
@@ -116,26 +120,28 @@ class _MainDrawerState extends State<MainDrawer> {
                   const SizedBox(
                     height: 16.0,
                   ),
-                  MyButton(
-                    textSize: 22.0,
-                    filled: false,
-                    child: const Row(
-                      children: [
-                        Icon(Icons.volunteer_activism),
-                        SizedBox(
-                          width: 8.0,
-                        ),
-                        MyText("Support Us"),
-                      ],
+                  if (enableContributions)
+                    MyButton(
+                      textSize: 22.0,
+                      filled: false,
+                      child: const Row(
+                        children: [
+                          Icon(Icons.volunteer_activism),
+                          SizedBox(
+                            width: 8.0,
+                          ),
+                          MyText("Support Us"),
+                        ],
+                      ),
+                      onTap: () {
+                        Navigator.of(context).pop();
+                        context.router.push(const ContributeRoute());
+                      },
                     ),
-                    onTap: () {
-                      Navigator.of(context).pop();
-                      context.router.push(const ContributeRoute());
-                    },
-                  ),
-                  const SizedBox(
-                    height: 16.0,
-                  ),
+                  if (enableContributions)
+                    const SizedBox(
+                      height: 16.0,
+                    ),
                   MyButton(
                     textSize: 22.0,
                     filled: false,

@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
@@ -31,6 +34,8 @@ class _WinCardState extends State<WinCard> {
       subject: "Check out my win!",
       sharePositionOrigin: box!.localToGlobal(Offset.zero) & box.size,
     );
+
+    await FirebaseAnalytics.instance.logEvent(name: "share_win");
   }
 
   @override
@@ -112,8 +117,8 @@ class _WinCardState extends State<WinCard> {
                       IconButton(
                         color: Theme.of(context).textTheme.bodyLarge!.color,
                         onPressed: _shareWin,
-                        icon: const Icon(
-                          Icons.ios_share,
+                        icon: Icon(
+                          Platform.isIOS ? Icons.ios_share : Icons.share,
                           size: 16,
                         ),
                       ),

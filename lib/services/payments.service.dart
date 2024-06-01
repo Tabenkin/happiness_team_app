@@ -8,8 +8,6 @@ typedef StorePackages = List<Package>;
 
 class PaymentsService {
   static Future<Products> fetchStoreProducts() async {
-    print("Fetch store products right?");
-
     try {
       var offerings = await Purchases.getOfferings();
 

@@ -72,6 +72,8 @@ dependencies:
   full_screen_image: ^2.0.0
   purchases_flutter: ^6.29.0
   collection: ^1.18.0
+  avatar_glow: ^3.0.1
+  flutter_shakemywidget: ^1.0.5+1
 
 dev_dependencies:
   flutter_test:
