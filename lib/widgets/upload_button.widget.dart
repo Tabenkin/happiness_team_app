@@ -7,6 +7,17 @@ import 'package:happiness_team_app/services/upload.service.dart';
 import 'package:happiness_team_app/widgets/my_button.widget.dart';
 import 'package:happiness_team_app/widgets/my_text.widget.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:permission_handler/permission_handler.dart';
+
+class UploadProgress {
+  int totalBytesToUpload = 0;
+  int totalBytesUploaded = 0;
+
+  UploadProgress({
+    required this.totalBytesToUpload,
+    required this.totalBytesUploaded,
+  });
+}
 
 class UploadButton extends StatefulWidget {
   final String label;
@@ -37,8 +48,9 @@ class UploadButton extends StatefulWidget {
 class _UploadButtonState extends State<UploadButton> {
   List<String> supportedFileTypes = [];
 
+  final Map<String, UploadProgress> _uploadProgressMap = {};
+
   bool _isUploading = false;
-  int _uploadProgress = 0;
 
   _chooseFileToUpload() async {
     if (_isUploading) {
@@ -52,40 +64,59 @@ class _UploadButtonState extends State<UploadButton> {
     var picker = ImagePicker();
     XFile? image;
 
+    setState(() {
+      _uploadProgressMap.clear();
+    });
+
     if (widget.imageSource == null) return;
 
     if (widget.imageSource == ImageSource.camera) {
+      var permission = await Permission.camera.isGranted;
+
+      if (permission == false) {
+        await Permission.camera.request();
+      }
+
       image = await picker.pickImage(source: ImageSource.camera);
+
+      if (image == null) return;
+
+      _uploadFile(image.path, image.name);
     } else {
-      image = await picker.pickImage(source: ImageSource.gallery);
+      List<XFile> images = await picker.pickMultiImage();
+
+      setState(() {
+        _isUploading = true;
+      });
+
+      for (var image in images) {
+        _uploadFile(image.path, image.name);
+      }
     }
-
-    if (image == null) return;
-
-    // convert xFile to platform file?
-    _uploadFile(image.path, image.name);
   }
 
   _uploadFile(String filePath, String fileName) {
+    setState(() {
+      _isUploading = true;
+    });
+
     var uploadTask = UploadService.uploadFileWithPath(
       filePath,
       fileName,
       filePath: widget.filePath,
     );
 
-    setState(() {
-      _isUploading = true;
-      _uploadProgress = 0;
-    });
-
     uploadTask.snapshotEvents.listen(_updateUploadProgress);
     uploadTask.then(_uploadComplete);
   }
 
   _updateUploadProgress(TaskSnapshot event) {
-    var progress = ((event.bytesTransferred / event.totalBytes) * 100).round();
+    // var progress = ((event.bytesTransferred / event.totalBytes) * 100).round();
     setState(() {
-      _uploadProgress = progress;
+      _uploadProgressMap[event.ref.fullPath] = UploadProgress(
+        totalBytesToUpload: event.totalBytes,
+        totalBytesUploaded: event.bytesTransferred,
+      );
     });
   }
 
@@ -104,12 +135,29 @@ class _UploadButtonState extends State<UploadButton> {
       contentType: metadata.contentType!,
     );
 
-    setState(() {
-      _isUploading = false;
-      _uploadProgress = 0;
+    widget.onUploadComplete(mediaItem);
+
+    _uploadProgressMap.remove(event.ref.fullPath);
+
+    if (_uploadProgressMap.isEmpty) {
+      setState(() {
+        _isUploading = false;
+      });
+    }
+  }
+
+  int get _uploadProgress {
+    if (_uploadProgressMap.isEmpty) return 0;
+
+    var totalBytesToUpload = 0;
+    var totalBytesUploaded = 0;
+
+    _uploadProgressMap.forEach((key, value) {
+      totalBytesToUpload += value.totalBytesToUpload;
+      totalBytesUploaded += value.totalBytesUploaded;
     });
 
-    widget.onUploadComplete(mediaItem);
+    return ((totalBytesUploaded / totalBytesToUpload) * 100).round();
   }
 
   @override

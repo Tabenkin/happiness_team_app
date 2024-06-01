@@ -57,13 +57,13 @@ class _WinFormContainerState extends State<WinFormContainer> {
 
   _onUploadComplete(MediaObject mediaObject) {
     setState(() {
-      widget.win.image = mediaObject;
+      widget.win.images.add(mediaObject);
     });
   }
 
-  _removeImage() {
+  _removeImage(MediaObject image) {
     setState(() {
-      widget.win.image = null;
+      widget.win.images.removeWhere((element) => element.id == image.id);
     });
   }
 
@@ -151,7 +151,7 @@ class _WinFormContainerState extends State<WinFormContainer> {
                   children: [
                     Expanded(
                       child: UploadButton(
-                        label: "Photos",
+                        label: "Photo",
                         icon: Icons.image_search,
                         fileType: FileType.image,
                         onUploadComplete: _onUploadComplete,
@@ -174,8 +174,9 @@ class _WinFormContainerState extends State<WinFormContainer> {
                     ),
                   ],
                 ),
-                if (widget.win.image != null)
+                for (var image in widget.win.images)
                   Column(
+                    key: ValueKey(image.id),
                     children: [
                       const SizedBox(
                         height: 16.0,
@@ -196,7 +197,7 @@ class _WinFormContainerState extends State<WinFormContainer> {
                                   borderRadius: Theme.of(context).borderRadius,
                                   child: ImageFullScreenWrapperWidget(
                                     child: Image.network(
-                                      widget.win.image!.mediaHref,
+                                      image.mediaHref,
                                       fit: BoxFit.cover,
                                     ),
                                   ),
@@ -207,7 +208,7 @@ class _WinFormContainerState extends State<WinFormContainer> {
                           Align(
                             alignment: Alignment.topRight,
                             child: IconButton(
-                              onPressed: _removeImage,
+                              onPressed: () => _removeImage(image),
                               style: ButtonStyle(
                                 backgroundColor: MaterialStateProperty.all(
                                   Theme.of(context).colorScheme.error,

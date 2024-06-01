@@ -61,6 +61,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         notes: "",
         userId: AuthService.currentUid,
         lastViewedTimestamp: 0,
+        images: [],
       ),
     );
   }

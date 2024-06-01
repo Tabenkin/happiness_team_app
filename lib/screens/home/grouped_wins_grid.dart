@@ -51,6 +51,16 @@ class GroupedWinsGrid extends StatelessWidget {
     );
   }
 
+  bool _hasImages(Wins wins) {
+    for (var win in wins) {
+      if (win.images.isNotEmpty) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
   @override
   Widget build(BuildContext context) {
     return SliverPadding(
@@ -80,33 +90,47 @@ class GroupedWinsGrid extends StatelessWidget {
                     //   color: Theme.of(context).colorScheme.secondary,
                     // ),
                   ),
-                  child: InkWell(
-                    borderRadius: BorderRadius.circular(8.0),
-                    onTap: () => _showWins(
-                      context,
-                      label,
-                      labelKey,
-                      groupedWins[labelKey]!,
-                    ),
-                    child: Center(
-                      child: SingleChildScrollView(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            MyText(
-                              label, // Displaying the year from groupedWins.
-                              style: Theme.of(context).textTheme.titleMedium!,
-                              maxTextScale: 1.0,
+                  child: Stack(
+                    children: [
+                      InkWell(
+                        borderRadius: BorderRadius.circular(8.0),
+                        onTap: () => _showWins(
+                          context,
+                          label,
+                          labelKey,
+                          groupedWins[labelKey]!,
+                        ),
+                        child: Center(
+                          child: SingleChildScrollView(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                MyText(
+                                  label, // Displaying the year from groupedWins.
+                                  style:
+                                      Theme.of(context).textTheme.titleMedium!,
+                                  maxTextScale: 1.0,
+                                ),
+                                MyText(
+                                  "(${groupedWins[labelKey]!.length} wins)",
+                                  style: Theme.of(context).textTheme.bodyLarge!,
+                                  maxTextScale: 1.0,
+                                ),
+                              ],
                             ),
-                            MyText(
-                              "(${groupedWins[labelKey]!.length} wins)",
-                              style: Theme.of(context).textTheme.bodyLarge!,
-                              maxTextScale: 1.0,
-                            ),
-                          ],
+                          ),
                         ),
                       ),
-                    ),
+                      if (_hasImages(groupedWins[labelKey]!) == true)
+                        const Positioned(
+                          top: 8,
+                          right: 8,
+                          child: Icon(
+                            Icons.photo_library,
+                            size: 18.0,
+                          ),
+                        )
+                    ],
                   ),
                 ),
               ),

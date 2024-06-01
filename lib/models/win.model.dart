@@ -10,7 +10,8 @@ class Win {
   DateTime date;
   String notes;
   int lastViewedTimestamp;
-  MediaObject? image;
+
+  MediaObjects images = [];
 
   Win({
     this.id,
@@ -18,7 +19,7 @@ class Win {
     required this.date,
     required this.notes,
     required this.lastViewedTimestamp,
-    this.image,
+    required this.images,
   });
 
   Map<String, dynamic> toMap() {
@@ -27,18 +28,24 @@ class Win {
       'date': date.millisecondsSinceEpoch,
       'notes': notes,
       'lastViewedTimestamp': lastViewedTimestamp,
-      'image': image?.toMap(),
+      'images': images.map((e) => e.toMap()).toList(),
     };
   }
 
   factory Win.fromMap(Map<String, dynamic> map) {
+    if (map['images'] == null && map['image'] != null) {
+      map['images'] = [map['image']];
+    }
+
     return Win(
       id: map['id'],
       userId: map['userId'],
       date: DateTime.fromMillisecondsSinceEpoch(map['date']),
       notes: map['notes'],
       lastViewedTimestamp: map['lastViewedTimestamp'],
-      image: map['image'] != null ? MediaObject.fromMap(map['image']) : null,
+      images: map['images'] != null
+          ? (map["images"] as List).map((e) => MediaObject.fromMap(e)).toList()
+          : [],
     );
   }
 
@@ -50,6 +57,13 @@ class Win {
 
     String formattedDate = DateFormat('MMMM d').format(date); // "February 2"
     return "$formattedDate$ordinal ${date.year}"; // "February 2nd 2024"
+  }
+
+  MediaObject? get image {
+    if (images.isNotEmpty) {
+      return images.first;
+    }
+    return null;
   }
 
   save() async {

@@ -74,6 +74,8 @@ dependencies:
   collection: ^1.18.0
   avatar_glow: ^3.0.1
   flutter_shakemywidget: ^1.0.5+1
+  permission_handler: ^11.3.1
+  photo_view: ^0.15.0
 
 dev_dependencies:
   flutter_test:
