@@ -57,6 +57,10 @@ class _UploadButtonState extends State<UploadButton> {
       return;
     }
 
+    setState(() {
+      _isUploading = true;
+    });
+
     _pickImageFile();
   }
 
@@ -68,7 +72,12 @@ class _UploadButtonState extends State<UploadButton> {
       _uploadProgressMap.clear();
     });
 
-    if (widget.imageSource == null) return;
+    if (widget.imageSource == null) {
+      setState(() {
+        _isUploading = false;
+      });
+      return;
+    }
 
     if (widget.imageSource == ImageSource.camera) {
       var permission = await Permission.camera.isGranted;
@@ -79,11 +88,23 @@ class _UploadButtonState extends State<UploadButton> {
 
       image = await picker.pickImage(source: ImageSource.camera);
 
-      if (image == null) return;
+      if (image == null) {
+        setState(() {
+          _isUploading = false;
+        });
+        return;
+      }
 
       _uploadFile(image.path, image.name);
     } else {
       List<XFile> images = await picker.pickMultiImage();
+
+      if (images.isEmpty) {
+        setState(() {
+          _isUploading = false;
+        });
+        return;
+      }
 
       setState(() {
         _isUploading = true;
@@ -170,6 +191,7 @@ class _UploadButtonState extends State<UploadButton> {
     return MyButton(
       color: MyButtonColor.secondary,
       onTap: _chooseFileToUpload,
+      showSpinner: _isUploading,
       child: _isUploading
           ? Text("Uploading $_uploadProgress%")
           : Row(
@@ -179,7 +201,10 @@ class _UploadButtonState extends State<UploadButton> {
                 if (widget.icon != null)
                   Row(
                     children: [
-                      Icon(widget.icon),
+                      Icon(
+                        widget.icon,
+                        size: 18,
+                      ),
                       const SizedBox(
                         width: 4.0,
                       ),

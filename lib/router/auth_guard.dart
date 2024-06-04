@@ -5,8 +5,6 @@ import 'package:happiness_team_app/router/happiness_router.gr.dart';
 class AuthGuard extends AutoRouteGuard {
   @override
   void onNavigation(NavigationResolver resolver, StackRouter router) {
-    print("Auth guard onNavigation");
-
     var isAuthenticated = FirebaseAuth.instance.currentUser != null;
 
     if (isAuthenticated) {

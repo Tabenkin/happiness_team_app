@@ -76,6 +76,8 @@ dependencies:
   flutter_shakemywidget: ^1.0.5+1
   permission_handler: ^11.3.1
   photo_view: ^0.15.0
+  swipe_image_gallery: ^0.8.7
+  carousel_slider: ^4.2.1
 
 dev_dependencies:
   flutter_test:
