@@ -13,7 +13,7 @@ const sendgridAPIKey = defineSecret("sendgrid_api_key");
 
 export const randomWinRemindersCron = onSchedule(
   {
-    schedule: "0 12 * * *",
+    schedule: "0 23 * * *",
     secrets: [sendgridAPIKey],
   },
   async () => {

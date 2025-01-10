@@ -10,7 +10,7 @@ export const sendEmail = async (to: string, subject: string, body: string) => {
 
   const msg = {
     to: to,
-    from: fromEmail.value(),
+    from: `Happiness Team <${fromEmail.value()}>`,
     subject: subject,
     html: body,
   };

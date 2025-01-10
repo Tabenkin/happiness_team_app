@@ -12,6 +12,7 @@ class AppUser {
   bool allowPushNotifications;
   DateTime createdOnTimestamp;
   DateTime lastLoginTimestamp;
+  DateTime? lastAskedToShareTimestamp;
 
   // Generate constructors, toMap and fromMap functions
 
@@ -24,6 +25,7 @@ class AppUser {
     required this.allowPushNotifications,
     required this.createdOnTimestamp,
     required this.lastLoginTimestamp,
+    this.lastAskedToShareTimestamp,
   });
 
   Map<String, dynamic> toMap() {
@@ -37,6 +39,8 @@ class AppUser {
       'allowPushNotifications': allowPushNotifications,
       'createdOnTimestamp': createdOnTimestamp.millisecondsSinceEpoch,
       'lastLoginTimestamp': lastLoginTimestamp.millisecondsSinceEpoch,
+      'lastAskedToShareTimestamp':
+          lastAskedToShareTimestamp?.millisecondsSinceEpoch,
     };
   }
 
@@ -56,6 +60,10 @@ class AppUser {
           DateTime.fromMillisecondsSinceEpoch(map['createdOnTimestamp']),
       lastLoginTimestamp:
           DateTime.fromMillisecondsSinceEpoch(map['lastLoginTimestamp']),
+      lastAskedToShareTimestamp: map['lastAskedToShareTimestamp'] != null
+          ? DateTime.fromMillisecondsSinceEpoch(
+              map['lastAskedToShareTimestamp'])
+          : null,
     );
   }
 

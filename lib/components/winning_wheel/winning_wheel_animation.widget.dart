@@ -1,8 +1,11 @@
 import 'dart:math';
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:happiness_team_app/happiness_theme.dart';
 import 'package:happiness_team_app/models/win.model.dart';
 import 'package:happiness_team_app/providers/wins.provider.dart';
+import 'package:happiness_team_app/widgets/image_full_screen_wrapper.widget.dart';
+import 'package:happiness_team_app/widgets/my_button.widget.dart';
 import 'package:happiness_team_app/widgets/my_text.widget.dart';
 import 'package:provider/provider.dart';
 
@@ -13,6 +16,7 @@ class WinningWheel extends StatefulWidget {
   final List<Color> circleColors;
   final Map<int, int> circleDepths;
   final Win? win;
+  final Function() onAddWin;
   final Function() onTriggerAnimation;
 
   const WinningWheel({
@@ -22,6 +26,7 @@ class WinningWheel extends StatefulWidget {
     required this.circleColors,
     required this.circleDepths,
     this.win,
+    required this.onAddWin,
     required this.onTriggerAnimation,
     super.key,
   });
@@ -191,7 +196,10 @@ class WinningWheelState extends State<WinningWheel> {
           builder: (context, child) {
             var maxWidth = constraints.maxWidth * 0.7;
 
-            double height = 56.0 + 150.0 * _finalTransfomAnimation.value;
+            var imageHeight = widget.win?.image != null ? 150.0 : 0;
+            var cardHeight = 150 + imageHeight;
+
+            double height = 56.0 + cardHeight * _finalTransfomAnimation.value;
             double width = 56 +
                 maxWidth * (1 - _initialTransformAnimation.value) +
                 maxWidth * _finalTransfomAnimation.value;
@@ -209,10 +217,37 @@ class WinningWheelState extends State<WinningWheel> {
               winWidget = Container(
                 width: double.infinity,
                 padding: const EdgeInsets.symmetric(
-                    vertical: 16.0, horizontal: 16.0),
+                  vertical: 16.0,
+                  horizontal: 16.0,
+                ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    if (widget.win?.image != null)
+                      Column(
+                        children: [
+                          AspectRatio(
+                            aspectRatio: 1.8,
+                            child: Container(
+                              decoration: BoxDecoration(
+                                borderRadius: Theme.of(context).borderRadius,
+                              ),
+                              child: ClipRRect(
+                                borderRadius: Theme.of(context).borderRadius,
+                                child: ImageFullScreenWrapperWidget(
+                                  child: Image.network(
+                                    widget.win!.image!.mediaHref,
+                                    fit: BoxFit.cover,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(
+                            height: 16.0,
+                          ),
+                        ],
+                      ),
                     Expanded(
                       child: SingleChildScrollView(
                         child: MyText(
@@ -225,6 +260,9 @@ class WinningWheelState extends State<WinningWheel> {
                               ),
                         ),
                       ),
+                    ),
+                    const SizedBox(
+                      height: 8.0,
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.end,
@@ -286,34 +324,60 @@ class WinningWheelState extends State<WinningWheel> {
               );
             }
 
-            return Transform.translate(
-              offset: positionAnimation.value,
-              child: Container(
-                width: max(0, width),
-                height: max(0, height),
-                decoration: BoxDecoration(
-                  color: colorAnimaton.value,
-                  borderRadius: BorderRadius.circular(borderRadius),
-                ),
-                child: FloatingActionButton(
-                  heroTag: ValueKey(color),
-                  onPressed: widget.onTriggerAnimation,
-                  backgroundColor: colorAnimaton.value,
-                  elevation: winWidget != null && circleDepth == 2 ? 1.0 : 0.0,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(borderRadius),
-                  ),
-                  child: AnimatedOpacity(
-                    opacity: widget.initialTransformController.isAnimating ||
-                            widget.rotationAnimationController.isAnimating ||
-                            widget.finalTransformController.isAnimating
-                        ? 0.0
-                        : 1.0,
+            return Column(
+              children: [
+                if (showWinText && widget.win != null)
+                  AnimatedOpacity(
                     duration: const Duration(milliseconds: 150),
-                    child: winWidget,
+                    opacity: showWinText && widget.win != null ? 1.0 : 0.0,
+                    child: Column(
+                      children: [
+                        SizedBox(
+                          width: width,
+                          child: MyButton(
+                            onTap: widget.onAddWin,
+                            child: const Text("Add a Win"),
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 8.0,
+                        ),
+                      ],
+                    ),
+                  ),
+                Transform.translate(
+                  offset: positionAnimation.value,
+                  child: Container(
+                    width: max(0, width),
+                    height: max(0, height),
+                    decoration: BoxDecoration(
+                      color: colorAnimaton.value,
+                      borderRadius: BorderRadius.circular(borderRadius),
+                    ),
+                    child: FloatingActionButton(
+                      heroTag: ValueKey(color),
+                      onPressed: widget.onTriggerAnimation,
+                      backgroundColor: colorAnimaton.value,
+                      elevation:
+                          winWidget != null && circleDepth == 2 ? 1.0 : 0.0,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(borderRadius),
+                      ),
+                      child: AnimatedOpacity(
+                        opacity:
+                            widget.initialTransformController.isAnimating ||
+                                    widget.rotationAnimationController
+                                        .isAnimating ||
+                                    widget.finalTransformController.isAnimating
+                                ? 0.0
+                                : 1.0,
+                        duration: const Duration(milliseconds: 150),
+                        child: winWidget,
+                      ),
+                    ),
                   ),
                 ),
-              ),
+              ],
             );
           },
         );

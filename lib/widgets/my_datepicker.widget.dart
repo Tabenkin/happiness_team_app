@@ -85,8 +85,9 @@ class _MyDatePickerState extends State<MyDatePicker> {
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 15.0),
         decoration: BoxDecoration(
-          border: Border.all(color: Colors.grey),
-          borderRadius: BorderRadius.circular(5.0),
+          border: Border.all(color: Colors.grey.shade300),
+          borderRadius: BorderRadius.circular(25.0),
+          color: Theme.of(context).colorScheme.surface
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,

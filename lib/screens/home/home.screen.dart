@@ -3,6 +3,8 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:auto_route/auto_route.dart';
+import 'package:avatar_glow/avatar_glow.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -31,6 +33,7 @@ import 'package:happiness_team_app/widgets/my_text.widget.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:rate_my_app/rate_my_app.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:sliver_tools/sliver_tools.dart';
 
 @RoutePage()
@@ -49,6 +52,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   StreamSubscription? _randomWinTriggerSubscription;
   StreamSubscription? _addWinTriggerSubscription;
 
+  bool _animateShareButton = false;
+
   void _addWin() {
     _editWin(
       Win(
@@ -56,6 +61,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         notes: "",
         userId: AuthService.currentUid,
         lastViewedTimestamp: 0,
+        images: [],
       ),
     );
   }
@@ -72,7 +78,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     const Color(0xFFA4DDF8), // Light Blue
     const Color(0xFFF7941D), // Orange
     const Color(0xFFA73A36), // Red
-    const Color(0xFF136478), // Dark Blue
+    const Color(0xFF0C5363), // Dark Blue
   ];
 
   bool _shouldMoveForward = true;
@@ -251,6 +257,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
     _checkShowNotificaitonReminder();
 
+    _animateShareButton =
+        Provider.of<UserProvider>(context, listen: false).remindUserToShare;
+
     WidgetsBinding.instance.addPostFrameCallback((_) => _checkAndShowRatings());
 
     super.initState();
@@ -285,6 +294,22 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     });
   }
 
+  _shareApp() async {
+    final box = context.findRenderObject() as RenderBox?;
+
+    await Share.share(
+      "Hi!\n\nThis is the Happiness Team app I was telling you about. You enter your wins and it reminds you of how awesome you are. And since you are awesome, I thought you would like to check it out.\n\nhttps://sfbyw.app.link/SkTrc6ajZHb",
+      subject: "Check out the Happiness App!",
+      sharePositionOrigin: box!.localToGlobal(Offset.zero) & box.size,
+    );
+
+    await FirebaseAnalytics.instance.logEvent(name: "share_win");
+
+    setState(() {
+      _animateShareButton = false;
+    });
+  }
+
   @override
   void dispose() {
     _randomWinTriggerSubscription?.cancel();
@@ -314,6 +339,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   circleColors: circleColors,
                   circleDepths: circleDepths,
                   win: _win,
+                  onAddWin: _addWin,
                   onTriggerAnimation: _onTriggerAnimation,
                 ),
               if (wins.length >= 10)
