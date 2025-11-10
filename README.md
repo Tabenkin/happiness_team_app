@@ -63,7 +63,7 @@ https://docs.flutter.dev/deployment/android
 - Note this should only need to be done once
 
 ```
-keytool -genkey -v -keystore ~/upload-keystore.jks -keyalg RSA \
+keytool -genkey -v -keystore ~/Sites/localhost/chef_jojo_flutter/upload-keystore.jks -keyalg RSA \
         -keysize 2048 -validity 10000 -alias upload
 
 ```

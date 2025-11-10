@@ -1,6 +1,6 @@
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:happiness_team_app/providers/user.provider.dart';
+import 'package:happiness_team_app/widgets/Base/base_text.widget.dart';
 import 'package:happiness_team_app/widgets/my_button.widget.dart';
 import 'package:happiness_team_app/widgets/my_text.widget.dart';
 import 'package:happiness_team_app/widgets/my_text_input.widget.dart';
@@ -11,8 +11,8 @@ class WelcomeInfoPage extends StatefulWidget {
 
   const WelcomeInfoPage({
     required this.onNextPage,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   State<WelcomeInfoPage> createState() => _WelcomeInfoPageState();
@@ -108,7 +108,7 @@ class _WelcomeInfoPageState extends State<WelcomeInfoPage> {
                         color: Theme.of(context).colorScheme.error,
                       ),
                       child: Center(
-                        child: Text(
+                        child: BaseText(
                           _errorMessage,
                           style: Theme.of(context)
                               .textTheme
@@ -158,7 +158,7 @@ class _WelcomeInfoPageState extends State<WelcomeInfoPage> {
               child: MyButton(
                 onTap: _saveUser,
                 showSpinner: _isSaving,
-                child: const Text("Save"),
+                child: const BaseText("Save"),
               ),
             ),
           ],

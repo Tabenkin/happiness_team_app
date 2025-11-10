@@ -1,7 +1,5 @@
 import 'dart:async';
 
-import 'package:auto_route/auto_route.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -13,7 +11,6 @@ import 'package:happiness_team_app/providers/app.provider.dart';
 import 'package:happiness_team_app/providers/auth_state.provider.dart';
 import 'package:happiness_team_app/providers/user.provider.dart';
 import 'package:happiness_team_app/providers/wins.provider.dart';
-import 'package:happiness_team_app/router/auth_state_listener.dart';
 import 'package:happiness_team_app/router/happiness_router.dart';
 import 'package:happiness_team_app/router/happiness_router.gr.dart';
 import 'package:oktoast/oktoast.dart';
@@ -49,6 +46,8 @@ class _MyAppState extends State<MyApp> {
   late UserProvider _userProvider;
   late AuthStateProvider _authProvider;
   late AppProvider _appProvider;
+  
+  RemoteMessage? _pendingMessage;
 
   @override
   void initState() {
@@ -96,7 +95,8 @@ class _MyAppState extends State<MyApp> {
     var initialMessage = await FirebaseMessaging.instance.getInitialMessage();
 
     if (initialMessage != null) {
-      _handleMessage(initialMessage);
+      // Store the message to handle it after app initialization
+      _pendingMessage = initialMessage;
     }
   }
 
@@ -148,6 +148,13 @@ class _MyAppState extends State<MyApp> {
             }
 
             FlutterNativeSplash.remove();
+            
+            // Handle pending message after app initialization
+            if (_pendingMessage != null) {
+              final message = _pendingMessage;
+              _pendingMessage = null;
+              Future.microtask(() => _handleMessage(message!));
+            }
 
             return OKToast(
               child: MaterialApp.router(

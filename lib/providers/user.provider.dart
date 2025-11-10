@@ -101,7 +101,16 @@ class UserProvider with ChangeNotifier {
       provisional: false,
     );
 
-    await FirebaseMessaging.instance.getToken();
+    var token = await FirebaseMessaging.instance.getToken();
+
+    var apnsToken = await FirebaseMessaging.instance.getAPNSToken();
+    print("apns token? $apnsToken");
+
+    print("refreshed token? $token");
+
+    if (token == null) return;
+
+    assignDeviceToken(token);
   }
 
   Future<void> requestPushNotificationPermissions() async {

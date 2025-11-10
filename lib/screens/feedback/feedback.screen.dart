@@ -3,6 +3,7 @@ import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:happiness_team_app/helpers/dialog.helpers.dart';
 import 'package:happiness_team_app/providers/user.provider.dart';
+import 'package:happiness_team_app/widgets/Base/base_text.widget.dart';
 import 'package:happiness_team_app/widgets/my_button.widget.dart';
 import 'package:happiness_team_app/widgets/my_text_input.widget.dart';
 import 'package:happiness_team_app/widgets/my_textarea.widget.dart';
@@ -11,8 +12,8 @@ import 'package:provider/provider.dart';
 @RoutePage()
 class FeedBackScreen extends StatefulWidget {
   const FeedBackScreen({
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   State<FeedBackScreen> createState() => _FeedBackScreenState();
@@ -73,7 +74,7 @@ class _FeedBackScreenState extends State<FeedBackScreen> {
             Navigator.of(context).pop();
           },
         ),
-        title: const Text('Feedback'),
+        title: const BaseText('Feedback'),
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(0),
           child: Divider(
@@ -86,9 +87,10 @@ class _FeedBackScreenState extends State<FeedBackScreen> {
           padding: const EdgeInsets.all(32),
           child: Column(
             children: [
-              Text(
+              BaseText(
                 "Have something to say? We love feedback.",
                 style: Theme.of(context).textTheme.headlineMedium,
+                maxTextScale: 1.0,
               ),
               const SizedBox(
                 height: 16.0,
@@ -119,7 +121,7 @@ class _FeedBackScreenState extends State<FeedBackScreen> {
                 child: MyButton(
                   onTap: onShareFeedback,
                   showSpinner: _isSendingFeedback,
-                  child: const Text("Submit Feedback"),
+                  child: const BaseText("Submit Feedback"),
                 ),
               ),
             ],

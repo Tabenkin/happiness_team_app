@@ -48,155 +48,246 @@ const shouldSendWinReminder = (user: any) => {
 };
 
 const sendRandomWinsReminder = async () => {
-  // Query /users collection for users who allow push notifications and have more than 10 wins
-  const usersSnapshot = await db
-    .collection("/users")
-    .where(
-      Filter.or(
-        Filter.where("allowPushNotifications", "==", true),
-        Filter.where("allowEmailNotifications", "==", true)
-      )
-    )
-    .get();
+  const BATCH_SIZE = 100; // Process users in batches
+  const FCM_BATCH_SIZE = 500; // FCM allows up to 500 messages per batch
+  
+  let lastDoc = null;
+  let totalUsersProcessed = 0;
+  let totalNotificationsSent = 0;
+  let hasMore = true;
 
-  if (usersSnapshot.empty) {
-    console.log("No matching users found.");
-    return;
-  }
+  console.log("Starting random wins reminder process...");
 
-  var allMessages = [];
-
-  for (var userDoc of usersSnapshot.docs) {
+  while (hasMore) {
     try {
-      var userData = userDoc.data();
+      // Query users in batches with pagination
+      let query = db
+        .collection("/users")
+        .where(
+          Filter.or(
+            Filter.where("allowPushNotifications", "==", true),
+            Filter.where("allowEmailNotifications", "==", true)
+          )
+        )
+        .limit(BATCH_SIZE);
 
-      var sendNotification = false;
-      var notification = {};
-      var data = {};
-
-      const sendExistingWinReminder = shouldSendWinReminder(userData);
-
-      // If the user has no wins, always send an add win reminder.
-
-      if (sendExistingWinReminder != true) {
-        var randomSubject = getRandomAddWinSubject();
-
-        notification = {
-          title: randomSubject,
-          body: "Add a win.",
-        };
-
-        data = {
-          event: "addWinReminder",
-        };
-
-        if (userData.email && userData.allowEmailNotifications) {
-          const body = getAddWinBody();
-          await sendEmail(userData.email, randomSubject, body);
-        }
-
-        sendNotification = true;
-      } else {
-        var randomWin = await getRandomWinForUser(userDoc.id);
-        var randomSubject = getRandomSubject();
-        var windDate = new Date(randomWin.date);
-        var winDateString = windDate.toLocaleDateString("en-US", {
-          year: "numeric",
-          month: "long",
-          day: "numeric",
-        });
-
-        notification = {
-          title: randomSubject,
-          body: truncateTo2KBWithEllipsis(
-            `${winDateString} - ${randomWin.notes}`
-          ),
-        };
-
-        data = {
-          event: "randomWinReminder",
-          winId: randomWin.id,
-        };
-
-        sendNotification = true;
-
-        if (userData.email && userData.allowEmailNotifications) {
-          const body = getEmailBody(randomWin);
-          await sendEmail(userData.email, randomSubject, body);
-        }
+      // Add pagination cursor if we have one
+      if (lastDoc) {
+        query = query.startAfter(lastDoc);
       }
 
-      if (sendNotification != true) continue;
+      const usersSnapshot = await query.get();
 
-      if (userData.allowPushNotifications) {
-        for (var device of userData.notificationDeviceTokens) {
-          var token = device.token;
-          const message: Message = {
-            notification: notification,
+      if (usersSnapshot.empty) {
+        console.log("No more users to process.");
+        hasMore = false;
+        break;
+      }
 
-            data: data,
-            token: token,
-            android: {
-              priority: "high",
-              notification: {
-                sound: "default",
-              },
-            },
-            apns: {
-              payload: {
-                aps: {
-                  sound: "default",
-                  badge: 0,
+      console.log(`Processing batch of ${usersSnapshot.docs.length} users...`);
+
+      // Process users in parallel for better performance
+      const userProcessingPromises = usersSnapshot.docs.map(async (userDoc) => {
+        try {
+          const userData = userDoc.data();
+          const messages: Message[] = [];
+
+          const sendExistingWinReminder = shouldSendWinReminder(userData);
+
+          let notification = {};
+          let data = {};
+
+          // Prepare notification content
+          if (sendExistingWinReminder != true) {
+            const randomSubject = getRandomAddWinSubject();
+
+            notification = {
+              title: randomSubject,
+              body: "Add a win.",
+            };
+
+            data = {
+              event: "addWinReminder",
+            };
+
+            // Send email asynchronously if enabled
+            if (userData.email && userData.allowEmailNotifications) {
+              const body = getAddWinBody();
+              // Don't await - let it run in background
+              sendEmail(userData.email, randomSubject, body).catch((err) =>
+                console.error(`Email error for user ${userDoc.id}:`, err)
+              );
+            }
+          } else {
+            const randomWin = await getRandomWinForUser(userDoc.id);
+            
+            if (!randomWin) {
+              console.warn(`No win found for user ${userDoc.id}, skipping...`);
+              return { messages: [], userId: userDoc.id };
+            }
+
+            const randomSubject = getRandomSubject();
+            const windDate = new Date(randomWin.date);
+            const winDateString = windDate.toLocaleDateString("en-US", {
+              year: "numeric",
+              month: "long",
+              day: "numeric",
+            });
+
+            notification = {
+              title: randomSubject,
+              body: truncateTo2KBWithEllipsis(
+                `${winDateString} - ${randomWin.notes}`
+              ),
+            };
+
+            data = {
+              event: "randomWinReminder",
+              winId: randomWin.id,
+            };
+
+            // Send email asynchronously if enabled
+            if (userData.email && userData.allowEmailNotifications) {
+              const body = getEmailBody(randomWin);
+              sendEmail(userData.email, randomSubject, body).catch((err) =>
+                console.error(`Email error for user ${userDoc.id}:`, err)
+              );
+            }
+          }
+
+          // Create push notification messages
+          if (userData.allowPushNotifications && userData.notificationDeviceTokens) {
+            for (const device of userData.notificationDeviceTokens) {
+              const message: Message = {
+                notification: notification,
+                data: data,
+                token: device.token,
+                android: {
+                  priority: "high",
+                  notification: {
+                    sound: "default",
+                  },
                 },
-              },
-            },
-          };
+                apns: {
+                  payload: {
+                    aps: {
+                      sound: "default",
+                      badge: 0,
+                    },
+                  },
+                },
+              };
+              messages.push(message);
+            }
+          }
 
-          allMessages.push(message);
+          return { messages, userId: userDoc.id };
+        } catch (error) {
+          console.error(`Error processing user ${userDoc.id}:`, error);
+          return { messages: [], userId: userDoc.id };
+        }
+      });
+
+      // Wait for all users in this batch to be processed
+      const results = await Promise.all(userProcessingPromises);
+      
+      // Collect all messages
+      const allMessages = results.flatMap((result) => result.messages);
+
+      console.log(`Generated ${allMessages.length} messages from this batch`);
+
+      // Send messages in FCM batches
+      if (allMessages.length > 0) {
+        for (let i = 0; i < allMessages.length; i += FCM_BATCH_SIZE) {
+          const batch = allMessages.slice(i, i + FCM_BATCH_SIZE);
+          
+          try {
+            const response = await messaging.sendEach(batch);
+            totalNotificationsSent += response.successCount;
+            
+            if (response.failureCount > 0) {
+              console.warn(
+                `Batch had ${response.failureCount} failures out of ${batch.length} messages`
+              );
+              
+              // Log individual failures for debugging
+              response.responses.forEach((resp, idx) => {
+                if (!resp.success) {
+                  console.error(
+                    `Message ${i + idx} failed:`,
+                    resp.error?.message || "Unknown error"
+                  );
+                }
+              });
+            }
+          } catch (error) {
+            console.error(`Error sending FCM batch:`, error);
+          }
         }
       }
+
+      totalUsersProcessed += usersSnapshot.docs.length;
+
+      // Update pagination cursor
+      lastDoc = usersSnapshot.docs[usersSnapshot.docs.length - 1];
+
+      // Check if we should continue
+      if (usersSnapshot.docs.length < BATCH_SIZE) {
+        hasMore = false;
+      }
+
+      console.log(
+        `Batch complete. Total users processed: ${totalUsersProcessed}, Total notifications sent: ${totalNotificationsSent}`
+      );
     } catch (error) {
-      console.log("Error?", error);
+      console.error("Error processing batch:", error);
+      // Continue to next batch even if this one fails
+      hasMore = false;
     }
   }
 
-  if (allMessages.length == 0) {
-    return;
-  }
-
-  try {
-    await messaging.sendEach(allMessages);
-  } catch (error) {
-    console.log("Error?", error);
-  }
+  console.log(
+    `Random wins reminder process complete. Processed ${totalUsersProcessed} users, sent ${totalNotificationsSent} notifications.`
+  );
 };
 
 const getRandomWinForUser = async (userId: string): Promise<any> => {
-  const winCollectionRef = db.collection(`/users/${userId}/wins`);
-  const winAggregateQuery = winCollectionRef.count();
-  const winAggregationSnapsht = await winAggregateQuery.get();
-  const numWins = winAggregationSnapsht.data().count;
+  try {
+    const winCollectionRef = db.collection(`/users/${userId}/wins`);
+    
+    // Use count aggregation
+    const winAggregateQuery = winCollectionRef.count();
+    const winAggregationSnapsht = await winAggregateQuery.get();
+    const numWins = winAggregationSnapsht.data().count;
 
-  const randomWinIndex = Math.floor(Math.random() * numWins);
+    if (numWins === 0) {
+      return null;
+    }
 
-  const randomWinQuery = winCollectionRef
-    .orderBy("date", "desc")
-    .offset(randomWinIndex)
-    .limit(1);
+    const randomWinIndex = Math.floor(Math.random() * numWins);
 
-  const randomWinSnapshot = await randomWinQuery.get();
+    const randomWinQuery = winCollectionRef
+      .orderBy("date", "desc")
+      .offset(randomWinIndex)
+      .limit(1);
 
-  if (randomWinSnapshot.empty) {
-    console.log("No matching wins found.");
-    return;
+    const randomWinSnapshot = await randomWinQuery.get();
+
+    if (randomWinSnapshot.empty) {
+      console.warn(`No wins found for user ${userId} despite count=${numWins}`);
+      return null;
+    }
+
+    const randomWin = randomWinSnapshot.docs[0];
+
+    return {
+      id: randomWin.id,
+      ...randomWin.data(),
+    };
+  } catch (error) {
+    console.error(`Error fetching random win for user ${userId}:`, error);
+    return null;
   }
-
-  const randomWin = randomWinSnapshot.docs[0];
-
-  return {
-    id: randomWin.id,
-    ...randomWin.data(),
-  };
 };
 
 const getRandomSubject = () => {

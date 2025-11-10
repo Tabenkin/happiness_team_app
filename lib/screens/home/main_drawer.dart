@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'dart:math';
 
 import 'package:auto_route/auto_route.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
@@ -30,8 +29,8 @@ class _MainDrawerState extends State<MainDrawer> {
         FirebaseRemoteConfig.instance.getBool("enable_contributions");
 
     return Drawer(
-      backgroundColor: Theme.of(context).colorScheme.background,
-      surfaceTintColor: Theme.of(context).colorScheme.background,
+      backgroundColor: Theme.of(context).colorScheme.surface,
+      surfaceTintColor: Theme.of(context).colorScheme.surface,
       child: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -101,7 +100,7 @@ class _MainDrawerState extends State<MainDrawer> {
                     },
                   ),
                   const SizedBox(
-                    height: 16.0,
+                    height: 8.0,
                   ),
                   MyButton(
                     textSize: 22.0,
@@ -121,7 +120,7 @@ class _MainDrawerState extends State<MainDrawer> {
                     },
                   ),
                   const SizedBox(
-                    height: 16.0,
+                    height: 8.0,
                   ),
                   if (enableContributions)
                     MyButton(
@@ -143,7 +142,7 @@ class _MainDrawerState extends State<MainDrawer> {
                     ),
                   if (enableContributions)
                     const SizedBox(
-                      height: 16.0,
+                      height: 8.0,
                     ),
                   MyButton(
                     textSize: 22.0,
@@ -161,6 +160,9 @@ class _MainDrawerState extends State<MainDrawer> {
                       Navigator.of(context).pop();
                       context.router.push(const WorkshopsRoute());
                     },
+                  ),
+                  const SizedBox(
+                    height: 8.0,
                   ),
                   MyButton(
                     textSize: 22.0,
@@ -191,7 +193,7 @@ class _MainDrawerState extends State<MainDrawer> {
                     },
                   ),
                   const SizedBox(
-                    height: 16.0,
+                    height: 8.0,
                   ),
                   MyButton(
                     textSize: 22.0,

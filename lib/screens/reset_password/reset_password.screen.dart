@@ -1,15 +1,16 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:happiness_team_app/happiness_theme.dart';
+import 'package:happiness_team_app/widgets/Base/base_text.widget.dart';
 import 'package:happiness_team_app/widgets/my_button.widget.dart';
 import 'package:happiness_team_app/widgets/my_text_input.widget.dart';
-import 'package:happiness_team_app/happiness_theme.dart';
 
 @RoutePage()
 class ResetPasswordScreen extends StatefulWidget {
   const ResetPasswordScreen({
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   State<ResetPasswordScreen> createState() => _ResetPasswordScreenState();
@@ -44,7 +45,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
       _isProcessing = true;
     });
 
-try {
+    try {
       await FirebaseAuth.instance.sendPasswordResetEmail(email: _email);
     } catch (error) {}
 
@@ -66,7 +67,7 @@ try {
             Navigator.of(context).pop();
           },
         ),
-        title: const Text('Reset Password'),
+        title: const BaseText('Reset Password'),
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -94,7 +95,7 @@ try {
                       borderRadius: BorderRadius.circular(20.0),
                       color: Theme.of(context).colorScheme.error,
                     ),
-                    child: Text(
+                    child: BaseText(
                       _errorMessage,
                       style: Theme.of(context).textTheme.bodyLarge!.copyWith(
                             color: Theme.of(context).colorScheme.onError,
@@ -122,7 +123,7 @@ try {
                       borderRadius: BorderRadius.circular(20.0),
                       color: theme.success,
                     ),
-                    child: Text(
+                    child: BaseText(
                       _successMessage,
                       style: Theme.of(context).textTheme.bodyLarge!.copyWith(
                             color: theme.onSuccess,
@@ -152,7 +153,7 @@ try {
                       child: MyButton(
                         onTap: _submit,
                         showSpinner: _isProcessing,
-                        child: const Text("Reset Password"),
+                        child: const BaseText("Reset Password"),
                       ),
                     ),
                   ],

@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:happiness_team_app/happiness_theme.dart';
 import 'package:happiness_team_app/models/win.model.dart';
+import 'package:happiness_team_app/widgets/Base/base_text.widget.dart';
 
 class WinProgress extends StatefulWidget {
   final Wins wins;
 
   const WinProgress({
     required this.wins,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   State<WinProgress> createState() => _WinProgressState();
@@ -61,8 +62,8 @@ class _WinProgressState extends State<WinProgress>
     var theme = Theme.of(context);
 
     return Padding(
-      padding: const EdgeInsets.only(
-          left: 32.0, right: 32.0, top: 40, bottom: 16.0),
+      padding:
+          const EdgeInsets.only(left: 32.0, right: 32.0, top: 40, bottom: 16.0),
       child: Column(
         children: [
           LinearProgressIndicator(
@@ -74,7 +75,7 @@ class _WinProgressState extends State<WinProgress>
           ),
           const Padding(
             padding: EdgeInsets.only(top: 8.0),
-            child: Text(
+            child: BaseText(
               "Add 10 wins to unlock new features",
               textAlign: TextAlign.center,
             ),

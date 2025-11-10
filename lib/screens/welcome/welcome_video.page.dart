@@ -1,7 +1,8 @@
 import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flick_video_player/flick_video_player.dart';
 import 'package:flutter/material.dart';
-import 'package:happiness_team_app/widgets/my_button.widget.dart';
+import 'package:happiness_team_app/widgets/Base/base_button.widget.dart';
+import 'package:happiness_team_app/widgets/Base/base_text.widget.dart';
 import 'package:video_player/video_player.dart';
 
 class WelcomeVideoPage extends StatefulWidget {
@@ -9,8 +10,8 @@ class WelcomeVideoPage extends StatefulWidget {
 
   const WelcomeVideoPage({
     required this.onNextPage,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   State<WelcomeVideoPage> createState() => _WelcomeVideoPageState();
@@ -61,9 +62,10 @@ class _WelcomeVideoPageState extends State<WelcomeVideoPage> {
             ),
             SizedBox(
               width: double.infinity,
-              child: MyButton(
-                onTap: widget.onNextPage,
-                child: const Text("Get Started"),
+              child: BaseButton(
+                width: double.infinity,
+                onPressed: widget.onNextPage,
+                child: const BaseText("Get Started"),
               ),
             ),
           ],

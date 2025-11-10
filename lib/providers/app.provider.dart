@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/material.dart';
-import 'package:happiness_team_app/providers/auth_state.provider.dart';
 import 'package:happiness_team_app/providers/user.provider.dart';
 import 'package:happiness_team_app/providers/wins.provider.dart';
 import 'package:happiness_team_app/services/auth.service.dart';
@@ -16,7 +15,7 @@ class AppProvider with ChangeNotifier {
   bool _isInitialized = false;
   bool _initilizationError = false;
 
-  final String _appVersion = "v0.0.1";
+  final String _appVersion = "v1.2.0";
 
   AppProvider({
     required WinsProvider winsProvider,
@@ -100,7 +99,7 @@ class AppProvider with ChangeNotifier {
 
       await remoteConfig.setConfigSettings(RemoteConfigSettings(
         fetchTimeout: const Duration(seconds: 15),
-        minimumFetchInterval: const Duration(minutes: 60),
+        minimumFetchInterval: const Duration(minutes: 1),
       ));
 
       await remoteConfig.fetchAndActivate();

@@ -1,20 +1,16 @@
 import 'package:carousel_slider/carousel_slider.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:happiness_team_app/happiness_theme.dart';
 import 'package:happiness_team_app/models/win.model.dart';
-import 'package:happiness_team_app/widgets/my_text.widget.dart';
-import 'package:photo_view/photo_view.dart';
-import 'package:photo_view/photo_view_gallery.dart';
+import 'package:happiness_team_app/widgets/Base/base_text.widget.dart';
 
 class WinPhotoGallery extends StatefulWidget {
   final Win win;
 
   const WinPhotoGallery({
     required this.win,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   State<WinPhotoGallery> createState() => _WinPhotoGalleryState();
@@ -23,7 +19,8 @@ class WinPhotoGallery extends StatefulWidget {
 class _WinPhotoGalleryState extends State<WinPhotoGallery> {
   var _currentPhotoIndex = 0;
 
-  final CarouselController _carouselController = CarouselController();
+  final CarouselSliderController _carouselController =
+      CarouselSliderController();
 
   void _nextPage() {
     _carouselController.nextPage(duration: const Duration(milliseconds: 150));
@@ -90,7 +87,7 @@ class _WinPhotoGalleryState extends State<WinPhotoGallery> {
                     const SizedBox(
                       width: 4.0,
                     ),
-                    Text(
+                    BaseText(
                       "${_currentPhotoIndex + 1} / ${widget.win.images.length} photos",
                       style: Theme.of(context).textTheme.bodyLarge!.copyWith(
                           color: Theme.of(context).colorScheme.onPrimary),

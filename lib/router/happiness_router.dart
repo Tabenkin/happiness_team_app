@@ -3,7 +3,7 @@ import 'package:happiness_team_app/router/auth_guard.dart';
 import 'package:happiness_team_app/router/happiness_router.gr.dart';
 
 @AutoRouterConfig()
-class AppRouter extends $AppRouter {
+class AppRouter extends RootStackRouter {
   @override
   List<AutoRoute> get routes => [
         AutoRoute(page: AuthRoute.page),

@@ -1,11 +1,15 @@
+import 'dart:io';
+
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:happiness_team_app/helpers/dialog.helpers.dart';
 import 'package:happiness_team_app/helpers/functions.helpers.dart';
 import 'package:happiness_team_app/models/media_object.model.dart';
 import 'package:happiness_team_app/services/upload.service.dart';
-import 'package:happiness_team_app/widgets/my_button.widget.dart';
-import 'package:happiness_team_app/widgets/my_text.widget.dart';
+import 'package:happiness_team_app/widgets/Base/base_button.widget.dart';
+import 'package:happiness_team_app/widgets/Base/base_text.widget.dart';
+import 'package:happiness_team_app/widgets/permission_denied_modal.widget.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -38,14 +42,19 @@ class UploadButton extends StatefulWidget {
     this.backgroundColor,
     this.textColor,
     this.icon,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   State<UploadButton> createState() => _UploadButtonState();
 }
 
 class _UploadButtonState extends State<UploadButton> {
+  var invalidPermissionStatuses = [
+    PermissionStatus.denied,
+    PermissionStatus.permanentlyDenied
+  ];
+
   List<String> supportedFileTypes = [];
 
   final Map<String, UploadProgress> _uploadProgressMap = {};
@@ -66,6 +75,7 @@ class _UploadButtonState extends State<UploadButton> {
 
   _pickImageFile() async {
     var picker = ImagePicker();
+
     XFile? image;
 
     setState(() {
@@ -80,13 +90,49 @@ class _UploadButtonState extends State<UploadButton> {
     }
 
     if (widget.imageSource == ImageSource.camera) {
-      var permission = await Permission.camera.isGranted;
+      if (Platform.isIOS) {
+        var status = await Permission.camera.status;
 
-      if (permission == false) {
-        await Permission.camera.request();
+        if (invalidPermissionStatuses.contains(status)) {
+          var response = await Permission.camera.request();
+
+          if (invalidPermissionStatuses.contains(response)) {
+            DialogHelper.showBottomSheetModal(
+              context,
+              heightFactor: 0.5,
+              child: const PermissionDeniedModal(permission: "camera"),
+            );
+            setState(() {
+              _isUploading = false;
+            });
+            return;
+          }
+        }
+
+        if (widget.fileType == FileType.video) {
+          var status = await Permission.microphone.status;
+
+          if (invalidPermissionStatuses.contains(status)) {
+            var response = await Permission.microphone.request();
+
+            if (invalidPermissionStatuses.contains(response)) {
+              DialogHelper.showBottomSheetModal(
+                context,
+                heightFactor: 0.5,
+                child: const PermissionDeniedModal(permission: "microphone"),
+              );
+              setState(() {
+                _isUploading = false;
+              });
+              return;
+            }
+          }
+        }
       }
 
-      image = await picker.pickImage(source: ImageSource.camera);
+      image = widget.fileType == FileType.image
+          ? await picker.pickImage(source: ImageSource.camera)
+          : await picker.pickVideo(source: ImageSource.camera);
 
       if (image == null) {
         setState(() {
@@ -95,28 +141,70 @@ class _UploadButtonState extends State<UploadButton> {
         return;
       }
 
-      _uploadFile(image.path, image.name);
+      uploadFile(image.path, image.name);
     } else {
-      List<XFile> images = await picker.pickMultiImage();
+      if (Platform.isIOS) {
+        var status = await Permission.photos.status;
 
-      if (images.isEmpty) {
+        if (invalidPermissionStatuses.contains(status)) {
+          var requestResponse = await Permission.photos.request();
+
+          if (invalidPermissionStatuses.contains(requestResponse)) {
+            DialogHelper.showBottomSheetModal(
+              context,
+              heightFactor: 0.5,
+              child: const PermissionDeniedModal(permission: "photos"),
+            );
+            setState(() {
+              _isUploading = false;
+            });
+            return;
+          }
+        }
+      }
+      try {
+        List<XFile> images = [];
+
+        if (widget.fileType == FileType.video) {
+          var response = await picker.pickVideo(
+              source: ImageSource.gallery,
+              maxDuration: const Duration(seconds: 60));
+
+          if (response != null) {
+            images.add(response);
+          }
+        } else {
+          images = await picker.pickMultiImage();
+        }
+
+        if (images.isEmpty) {
+          setState(() {
+            _isUploading = false;
+          });
+          return;
+        }
+
+        setState(() {
+          _isUploading = true;
+        });
+
+        for (var image in images) {
+          uploadFile(image.path, image.name);
+        }
+      } catch (error) {
+        DialogHelper.showBottomSheetModal(
+          context,
+          heightFactor: 0.5,
+          child: const PermissionDeniedModal(permission: "photos"),
+        );
         setState(() {
           _isUploading = false;
         });
-        return;
-      }
-
-      setState(() {
-        _isUploading = true;
-      });
-
-      for (var image in images) {
-        _uploadFile(image.path, image.name);
       }
     }
   }
 
-  _uploadFile(String filePath, String fileName) {
+  uploadFile(String filePath, String fileName) {
     setState(() {
       _isUploading = true;
     });
@@ -127,11 +215,11 @@ class _UploadButtonState extends State<UploadButton> {
       filePath: widget.filePath,
     );
 
-    uploadTask.snapshotEvents.listen(_updateUploadProgress);
-    uploadTask.then(_uploadComplete);
+    uploadTask.snapshotEvents.listen(updateUploadProgress);
+    uploadTask.then(uploadComplete);
   }
 
-  _updateUploadProgress(TaskSnapshot event) {
+  updateUploadProgress(TaskSnapshot event) {
     // var progress = ((event.bytesTransferred / event.totalBytes) * 100).round();
     setState(() {
       _uploadProgressMap[event.ref.fullPath] = UploadProgress(
@@ -141,7 +229,7 @@ class _UploadButtonState extends State<UploadButton> {
     });
   }
 
-  _uploadComplete(TaskSnapshot event) async {
+  uploadComplete(TaskSnapshot event) async {
     var downloadUrl = await event.ref.getDownloadURL();
     var metadata = await event.ref.getMetadata();
 
@@ -188,12 +276,15 @@ class _UploadButtonState extends State<UploadButton> {
 
   @override
   Widget build(BuildContext context) {
-    return MyButton(
-      color: MyButtonColor.secondary,
-      onTap: _chooseFileToUpload,
+    return BaseButton(
+      theme: BaseButtonTheme.secondary,
+      onPressed: _chooseFileToUpload,
       showSpinner: _isUploading,
       child: _isUploading
-          ? Text("Uploading $_uploadProgress%")
+          ? BaseText(
+              "Uploading $_uploadProgress%",
+              maxTextScale: 1.0,
+            )
           : Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.center,
@@ -210,7 +301,12 @@ class _UploadButtonState extends State<UploadButton> {
                       ),
                     ],
                   ),
-                Text(widget.label),
+                FittedBox(
+                  child: BaseText(
+                    widget.label,
+                    maxTextScale: 1.0,
+                  ),
+                ),
               ],
             ),
     );

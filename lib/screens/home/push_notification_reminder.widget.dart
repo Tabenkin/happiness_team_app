@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:happiness_team_app/helpers/dialog.helpers.dart';
 import 'package:happiness_team_app/providers/user.provider.dart';
+import 'package:happiness_team_app/widgets/Base/base_text.widget.dart';
 import 'package:happiness_team_app/widgets/my_button.widget.dart';
 import 'package:provider/provider.dart';
 
 class PushNotificationReminder extends StatefulWidget {
   const PushNotificationReminder({
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   State<PushNotificationReminder> createState() =>
@@ -71,7 +72,7 @@ class _PushNotificationReminderState extends State<PushNotificationReminder> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
+              BaseText(
                 "This app is sad because you haven’t enabled push notifications. Turn them on?",
                 style: Theme.of(context).textTheme.headlineSmall,
               ),
@@ -86,7 +87,7 @@ class _PushNotificationReminderState extends State<PushNotificationReminder> {
                     SizedBox(
                       width: 8.0,
                     ),
-                    Text("Enable Push Notifications"),
+                    BaseText("Enable Push Notifications"),
                   ],
                 ),
               ),

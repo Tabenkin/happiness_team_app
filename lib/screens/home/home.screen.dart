@@ -3,34 +3,25 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:auto_route/auto_route.dart';
-import 'package:avatar_glow/avatar_glow.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_slidable/flutter_slidable.dart';
-import 'package:happiness_team_app/components/win_form/win_form_container.widget.dart';
-import 'package:happiness_team_app/components/win_list/animated_win_list.widget.dart';
 import 'package:happiness_team_app/components/winning_wheel/winning_wheel_animation.widget.dart';
 import 'package:happiness_team_app/helpers/dialog.helpers.dart';
 import 'package:happiness_team_app/models/win.model.dart';
-import 'package:happiness_team_app/providers/auth_state.provider.dart';
 import 'package:happiness_team_app/providers/user.provider.dart';
 import 'package:happiness_team_app/providers/wins.provider.dart';
-import 'package:happiness_team_app/components/win_list/win_card.widget.dart';
 import 'package:happiness_team_app/screens/home/grouped_wins_grid.dart';
 import 'package:happiness_team_app/screens/home/grouped_wins_list.widget.dart';
 import 'package:happiness_team_app/screens/home/grouping_header.widget.dart';
-import 'package:happiness_team_app/screens/home/grouping_tabs.widget.dart';
 import 'package:happiness_team_app/screens/home/main_drawer.dart';
 import 'package:happiness_team_app/screens/home/monthly_grouped_wins.dart';
 import 'package:happiness_team_app/screens/home/push_notification_reminder.widget.dart';
 import 'package:happiness_team_app/screens/home/win_progress.dart';
 import 'package:happiness_team_app/services/auth.service.dart';
+import 'package:happiness_team_app/widgets/Base/base_text.widget.dart';
 import 'package:happiness_team_app/widgets/my_animated_add_icon.widget.dart';
 import 'package:happiness_team_app/widgets/my_button.widget.dart';
 import 'package:happiness_team_app/widgets/my_text.widget.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:rate_my_app/rate_my_app.dart';
 import 'package:share_plus/share_plus.dart';
@@ -365,8 +356,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           floatingActionButtonLocation:
               FloatingActionButtonLocation.centerDocked,
           appBar: AppBar(
-            backgroundColor: Theme.of(context).colorScheme.background,
-            surfaceTintColor: Theme.of(context).colorScheme.background,
+            backgroundColor: Theme.of(context).colorScheme.surface,
+            surfaceTintColor: Theme.of(context).colorScheme.surface,
             iconTheme: IconThemeData(
               color: Theme.of(context).colorScheme.primary,
             ),
@@ -468,7 +459,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                               width: double.infinity,
                               child: MyButton(
                                 onTap: _addWin,
-                                child: const Text("Add Win"),
+                                child: const BaseText("Add Win"),
                               ),
                             ),
                           ],

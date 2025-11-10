@@ -1,13 +1,12 @@
 import 'dart:math';
-import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:happiness_team_app/happiness_theme.dart';
 import 'package:happiness_team_app/models/win.model.dart';
-import 'package:happiness_team_app/providers/wins.provider.dart';
+import 'package:happiness_team_app/widgets/Base/base_button.widget.dart';
+import 'package:happiness_team_app/widgets/Base/base_text.widget.dart';
 import 'package:happiness_team_app/widgets/image_full_screen_wrapper.widget.dart';
-import 'package:happiness_team_app/widgets/my_button.widget.dart';
 import 'package:happiness_team_app/widgets/my_text.widget.dart';
-import 'package:provider/provider.dart';
 
 class WinningWheel extends StatefulWidget {
   final AnimationController initialTransformController;
@@ -334,9 +333,13 @@ class WinningWheelState extends State<WinningWheel> {
                       children: [
                         SizedBox(
                           width: width,
-                          child: MyButton(
-                            onTap: widget.onAddWin,
-                            child: const Text("Add a Win"),
+                          child: BaseButton(
+                            onPressed: widget.onAddWin,
+                            width: double.infinity,
+                            child: BaseText(
+                              "Add a Win",
+                              maxTextScale: 1.0,
+                            ),
                           ),
                         ),
                         const SizedBox(

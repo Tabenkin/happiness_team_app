@@ -1,22 +1,17 @@
 import 'dart:io';
 
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
-import 'package:full_screen_image/full_screen_image.dart';
+import 'package:happiness_team_app/components/win_list/win_media_preview.widget.dart';
 import 'package:happiness_team_app/components/win_list/win_photo_gallery.widget.dart';
 import 'package:happiness_team_app/happiness_theme.dart';
 import 'package:happiness_team_app/helpers/dialog.helpers.dart';
 import 'package:happiness_team_app/models/win.model.dart';
+import 'package:happiness_team_app/widgets/Base/base_text.widget.dart';
 import 'package:happiness_team_app/widgets/image_full_screen_wrapper.widget.dart';
-import 'package:happiness_team_app/widgets/my_text.widget.dart';
-import 'package:photo_view/photo_view.dart';
-import 'package:photo_view/photo_view_gallery.dart';
 import 'package:share_plus/share_plus.dart';
-import 'package:swipe_image_gallery/swipe_image_gallery.dart';
-import 'package:carousel_slider/carousel_slider.dart';
 
 class WinCard extends StatefulWidget {
   final Win win;
@@ -25,15 +20,16 @@ class WinCard extends StatefulWidget {
   const WinCard({
     required this.win,
     required this.onEdit,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   State<WinCard> createState() => _WinCardState();
 }
 
 class _WinCardState extends State<WinCard> {
-  final CarouselController _carouselController = CarouselController();
+  final CarouselSliderController _carouselController =
+      CarouselSliderController();
 
   _shareWin() async {
     final box = context.findRenderObject() as RenderBox?;
@@ -88,8 +84,8 @@ class _WinCardState extends State<WinCard> {
         ],
       ),
       child: Card(
-        surfaceTintColor: theme.colorScheme.background,
-        color: theme.colorScheme.background,
+        surfaceTintColor: theme.colorScheme.surface,
+        color: theme.colorScheme.surface,
         margin: EdgeInsets.zero,
         child: Container(
           decoration: BoxDecoration(
@@ -130,17 +126,8 @@ class _WinCardState extends State<WinCard> {
                             carouselController: _carouselController,
                             itemCount: widget.win.images.length,
                             itemBuilder: (context, index, realIndex) {
-                              return ClipRRect(
-                                borderRadius: Theme.of(context).borderRadius,
-                                child: AspectRatio(
-                                  aspectRatio: 1.5,
-                                  child: ImageFullScreenWrapperWidget(
-                                    child: Image.network(
-                                      widget.win.images[index].mediaHref,
-                                      fit: BoxFit.cover,
-                                    ),
-                                  ),
-                                ),
+                              return WinMediaPreview(
+                                mediaObject: widget.win.images[index],
                               );
                             },
                             options: CarouselOptions(
@@ -177,8 +164,8 @@ class _WinCardState extends State<WinCard> {
                                 const SizedBox(
                                   width: 4.0,
                                 ),
-                                Text(
-                                  "${_currentPhotoIndex + 1} / ${widget.win.images.length} photos",
+                                BaseText(
+                                  "${_currentPhotoIndex + 1} / ${widget.win.images.length} items",
                                 ),
                                 const SizedBox(
                                   width: 4.0,
@@ -209,9 +196,10 @@ class _WinCardState extends State<WinCard> {
                       ),
                     ],
                   ),
-                MyText(
+                BaseText(
                   widget.win.notes,
                   style: Theme.of(context).textTheme.bodyLarge,
+                  maxTextScale: 1.1,
                 ),
                 const SizedBox(
                   height: 16.0,
@@ -220,11 +208,12 @@ class _WinCardState extends State<WinCard> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    MyText(
+                    BaseText(
                       widget.win.formattedDate,
                       style: theme.textTheme.bodyMedium!.copyWith(
                         height: 1.0,
                       ),
+                      maxTextScale: 1.1,
                     ),
                     Row(
                       children: [

@@ -1,16 +1,13 @@
 import 'package:file_picker/file_picker.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
-import 'package:happiness_team_app/happiness_theme.dart';
+import 'package:happiness_team_app/components/win_list/win_media_preview.widget.dart';
 import 'package:happiness_team_app/helpers/dialog.helpers.dart';
 import 'package:happiness_team_app/models/media_object.model.dart';
 import 'package:happiness_team_app/models/win.model.dart';
 import 'package:happiness_team_app/services/auth.service.dart';
-import 'package:happiness_team_app/widgets/image_full_screen_wrapper.widget.dart';
-import 'package:happiness_team_app/widgets/my_button.widget.dart';
+import 'package:happiness_team_app/widgets/Base/base_button.widget.dart';
+import 'package:happiness_team_app/widgets/Base/base_text.widget.dart';
 import 'package:happiness_team_app/widgets/my_datepicker.widget.dart';
-import 'package:happiness_team_app/widgets/my_text.widget.dart';
 import 'package:happiness_team_app/widgets/my_textarea.widget.dart';
 import 'package:happiness_team_app/widgets/upload_button.widget.dart';
 import 'package:image_picker/image_picker.dart';
@@ -20,8 +17,8 @@ class WinFormContainer extends StatefulWidget {
 
   const WinFormContainer({
     required this.win,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   State<WinFormContainer> createState() => _WinFormContainerState();
@@ -76,8 +73,8 @@ class _WinFormContainerState extends State<WinFormContainer> {
       child: Scaffold(
         appBar: AppBar(
           toolbarHeight: kToolbarHeight * 1.5,
-          backgroundColor: Theme.of(context).colorScheme.background,
-          surfaceTintColor: Theme.of(context).colorScheme.background,
+          backgroundColor: Theme.of(context).colorScheme.surface,
+          surfaceTintColor: Theme.of(context).colorScheme.surface,
           leading: IconButton(
             icon: const Icon(Icons.close),
             color: Theme.of(context).colorScheme.primary,
@@ -93,11 +90,12 @@ class _WinFormContainerState extends State<WinFormContainer> {
           ),
           title: Padding(
             padding: const EdgeInsets.all(8.0),
-            child: MyText(
+            child: BaseText(
               widget.win.id != null ? "Edit Win" : "Add Win",
               style: Theme.of(context).textTheme.titleSmall!.copyWith(
                     color: Theme.of(context).colorScheme.primary,
                   ),
+              maxTextScale: 1.0,
             ),
           ),
         ),
@@ -107,9 +105,10 @@ class _WinFormContainerState extends State<WinFormContainer> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                MyText(
+                BaseText(
                   "When did you win?",
                   style: Theme.of(context).textTheme.headlineSmall,
+                  maxTextScale: 1.0,
                 ),
                 const SizedBox(
                   height: 8.0,
@@ -126,9 +125,10 @@ class _WinFormContainerState extends State<WinFormContainer> {
                 const SizedBox(
                   height: 16.0,
                 ),
-                MyText(
+                BaseText(
                   "Notes",
                   style: Theme.of(context).textTheme.headlineSmall,
+                  maxTextScale: 1.0,
                 ),
                 const SizedBox(
                   height: 8.0,
@@ -140,8 +140,9 @@ class _WinFormContainerState extends State<WinFormContainer> {
                   initialValue: widget.win.notes,
                 ),
                 const SizedBox(height: 16.0),
-                MyText(
-                  "Add an image?",
+                BaseText(
+                  "Add an image or video?",
+                  maxTextScale: 1.0,
                   style: Theme.of(context).textTheme.headlineSmall,
                 ),
                 const SizedBox(
@@ -151,7 +152,7 @@ class _WinFormContainerState extends State<WinFormContainer> {
                   children: [
                     Expanded(
                       child: UploadButton(
-                        label: "Photo",
+                        label: "Upload Photo",
                         icon: Icons.image_search,
                         fileType: FileType.image,
                         onUploadComplete: _onUploadComplete,
@@ -164,9 +165,39 @@ class _WinFormContainerState extends State<WinFormContainer> {
                     ),
                     Expanded(
                       child: UploadButton(
-                        label: "Camera",
+                        label: "Upload Video",
+                        icon: Icons.image_search,
+                        fileType: FileType.video,
+                        onUploadComplete: _onUploadComplete,
+                        imageSource: ImageSource.gallery,
+                        filePath: "/user-uploads/${AuthService.currentUid}",
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(
+                  height: 16.0,
+                ),
+                Row(
+                  children: [
+                    Expanded(
+                      child: UploadButton(
+                        label: "Take Photo",
                         icon: Icons.camera_alt,
                         fileType: FileType.image,
+                        onUploadComplete: _onUploadComplete,
+                        imageSource: ImageSource.camera,
+                        filePath: "/user-uploads/${AuthService.currentUid}",
+                      ),
+                    ),
+                    const SizedBox(
+                      width: 4.0,
+                    ),
+                    Expanded(
+                      child: UploadButton(
+                        label: "Take Video",
+                        icon: Icons.video_call,
+                        fileType: FileType.video,
                         onUploadComplete: _onUploadComplete,
                         imageSource: ImageSource.camera,
                         filePath: "/user-uploads/${AuthService.currentUid}",
@@ -183,34 +214,15 @@ class _WinFormContainerState extends State<WinFormContainer> {
                       ),
                       Stack(
                         children: [
-                          AspectRatio(
-                            aspectRatio: 1.5,
-                            child: PhysicalModel(
-                              elevation: 1.0,
-                              borderRadius: Theme.of(context).borderRadius,
-                              color: Theme.of(context).colorScheme.background,
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  borderRadius: Theme.of(context).borderRadius,
-                                ),
-                                child: ClipRRect(
-                                  borderRadius: Theme.of(context).borderRadius,
-                                  child: ImageFullScreenWrapperWidget(
-                                    child: Image.network(
-                                      image.mediaHref,
-                                      fit: BoxFit.cover,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
+                          WinMediaPreview(
+                            mediaObject: image,
                           ),
                           Align(
                             alignment: Alignment.topRight,
                             child: IconButton(
                               onPressed: () => _removeImage(image),
                               style: ButtonStyle(
-                                backgroundColor: MaterialStateProperty.all(
+                                backgroundColor: WidgetStateProperty.all(
                                   Theme.of(context).colorScheme.error,
                                 ),
                               ),
@@ -229,11 +241,13 @@ class _WinFormContainerState extends State<WinFormContainer> {
                 ),
                 SizedBox(
                   width: double.infinity,
-                  child: MyButton(
+                  child: BaseButton(
                     showSpinner: _isSaving,
-                    onTap: _save,
-                    child: MyText(
+                    width: double.infinity,
+                    onPressed: _save,
+                    child: BaseText(
                       "Save",
+                      maxTextScale: 1.0,
                       style: TextStyle(
                         color: Theme.of(context).colorScheme.onPrimary,
                       ),

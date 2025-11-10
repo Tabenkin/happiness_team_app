@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:happiness_team_app/helpers/dialog.helpers.dart';
 import 'package:happiness_team_app/providers/user.provider.dart';
+import 'package:happiness_team_app/widgets/Base/base_text.widget.dart';
 import 'package:happiness_team_app/widgets/my_button.widget.dart';
 import 'package:happiness_team_app/widgets/my_text.widget.dart';
 import 'package:provider/provider.dart';
@@ -10,8 +11,8 @@ class WelcomeNotificationsSetupPage extends StatefulWidget {
 
   const WelcomeNotificationsSetupPage({
     required this.onNextPage,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   State<WelcomeNotificationsSetupPage> createState() =>
@@ -136,7 +137,7 @@ class _WelcomeNotificationsSetupPageState
               child: const Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text("Next"),
+                  BaseText("Next"),
                 ],
               ),
             ),

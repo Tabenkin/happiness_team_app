@@ -4,7 +4,8 @@ import 'package:happiness_team_app/helpers/dialog.helpers.dart';
 import 'package:happiness_team_app/models/product.model.dart';
 import 'package:happiness_team_app/router/happiness_router.gr.dart';
 import 'package:happiness_team_app/services/payments.service.dart';
-import 'package:happiness_team_app/widgets/my_button.widget.dart';
+import 'package:happiness_team_app/widgets/Base/base_button.widget.dart';
+import 'package:happiness_team_app/widgets/Base/base_text.widget.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
 
 class ContributeListItem extends StatefulWidget {
@@ -12,8 +13,8 @@ class ContributeListItem extends StatefulWidget {
 
   const ContributeListItem({
     required this.product,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   State<ContributeListItem> createState() => _ContributeListItemState();
@@ -53,19 +54,24 @@ class _ContributeListItemState extends State<ContributeListItem> {
         widget.product.type == ProductType.subscription ? "/month" : "";
 
     return ListTile(
-      onTap: () => _purchasePackage(storePackage),
       contentPadding:
           const EdgeInsets.symmetric(vertical: 16.0, horizontal: 16.0),
-      title: Text(
+      title: BaseText(
         widget.product.label,
         style: Theme.of(context).textTheme.headlineSmall,
+        maxTextScale: 1.0,
       ),
       trailing: SizedBox(
-        width: 150,
-        child: MyButton(
-          color: MyButtonColor.secondary,
+        width: 160,
+        child: BaseButton(
+          width: double.infinity,
+          onPressed: () => _purchasePackage(storePackage),
+          theme: BaseButtonTheme.secondary,
           showSpinner: _isPurchasing,
-          child: Text("${storeProduct.priceString}$suffix"),
+          child: BaseText(
+            "${storeProduct.priceString}$suffix",
+            maxTextScale: 1.0,
+          ),
         ),
       ),
     );

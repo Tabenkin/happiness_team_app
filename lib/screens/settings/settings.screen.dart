@@ -1,10 +1,11 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_launcher_icons/xml_templates.dart';
 import 'package:happiness_team_app/helpers/dialog.helpers.dart';
 import 'package:happiness_team_app/providers/auth_state.provider.dart';
 import 'package:happiness_team_app/providers/user.provider.dart';
+import 'package:happiness_team_app/widgets/Base/base_button.widget.dart';
+import 'package:happiness_team_app/widgets/Base/base_text.widget.dart';
 import 'package:happiness_team_app/widgets/my_button.widget.dart';
 import 'package:happiness_team_app/widgets/my_text.widget.dart';
 import 'package:happiness_team_app/widgets/my_text_input.widget.dart';
@@ -13,8 +14,8 @@ import 'package:provider/provider.dart';
 @RoutePage()
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   State<SettingsScreen> createState() => _SettingsScreenState();
@@ -93,7 +94,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             Navigator.of(context).pop();
           },
         ),
-        title: const Text('Settings'),
+        title: const BaseText('Settings'),
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(0),
           child: Divider(
@@ -132,7 +133,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               // Toggle with labe "Enable email notifications?"
               Row(
                 children: [
-                  const MyText("Enable email notifications?"),
+                  const BaseText("Enable email notifications?"),
                   const Spacer(),
                   Switch(
                     value: _userProvider.user?.allowEmailNotifications ?? false,
@@ -167,10 +168,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ),
               SizedBox(
                 width: double.infinity,
-                child: MyButton(
-                  onTap: _saveUser,
+                child: BaseButton(
+                  width: double.infinity,
+                  onPressed: _saveUser,
                   showSpinner: _isSaving,
-                  child: const Text("Save"),
+                  child: const BaseText("Save"),
                 ),
               ),
               const SizedBox(

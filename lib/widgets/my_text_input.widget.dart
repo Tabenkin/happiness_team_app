@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:happiness_team_app/widgets/Base/base_text.widget.dart';
 
 class MyTextInput extends StatefulWidget {
   final String? labelText;
@@ -10,7 +11,7 @@ class MyTextInput extends StatefulWidget {
   final ValueChanged<String>? onSubmitted;
 
   const MyTextInput({
-    Key? key,
+    super.key,
     this.labelText,
     this.initialValue,
     this.placeholder,
@@ -18,7 +19,7 @@ class MyTextInput extends StatefulWidget {
     this.keyboardType = TextInputType.text,
     this.isPassword = false,
     this.onSubmitted,
-  }) : super(key: key);
+  });
 
   @override
   _MyTextInputState createState() => _MyTextInputState();
@@ -43,7 +44,7 @@ class _MyTextInputState extends State<MyTextInput> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         if (widget.labelText != null && widget.labelText!.isNotEmpty)
-          Text(
+          BaseText(
             widget.labelText!,
             style: const TextStyle(
               fontWeight: FontWeight.bold,
@@ -52,47 +53,50 @@ class _MyTextInputState extends State<MyTextInput> {
           ),
         if (widget.labelText != null && widget.labelText!.isNotEmpty)
           const SizedBox(height: 8),
-        TextField(
-          controller: _controller,
-          keyboardType: widget.keyboardType,
-          obscureText: _isObscured,
-          style: Theme.of(context).textTheme.bodyMedium,
-          decoration: InputDecoration(
-            filled: true,
-            fillColor: Theme.of(context).colorScheme.surface,
-            hintText: widget.placeholder,
-            contentPadding:
-                const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(25),
-              borderSide: BorderSide(color: Colors.grey.shade300),
-            ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(25),
-              borderSide: BorderSide(color: Colors.grey.shade300),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(25),
-              borderSide: BorderSide(
-                color: Theme.of(context).colorScheme.tertiary,
+        MediaQuery(
+          data: MediaQuery.of(context).copyWith(textScaler: TextScaler.linear(1.0)),
+          child: TextField(
+            controller: _controller,
+            keyboardType: widget.keyboardType,
+            obscureText: _isObscured,
+            style: Theme.of(context).textTheme.bodyMedium!,
+            decoration: InputDecoration(
+              filled: true,
+              fillColor: Theme.of(context).colorScheme.surface,
+              hintText: widget.placeholder,
+              contentPadding:
+                  const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(25),
+                borderSide: BorderSide(color: Colors.grey.shade300),
               ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(25),
+                borderSide: BorderSide(color: Colors.grey.shade300),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(25),
+                borderSide: BorderSide(
+                  color: Theme.of(context).colorScheme.tertiary,
+                ),
+              ),
+              suffixIcon: widget.isPassword
+                  ? IconButton(
+                      icon: Icon(
+                        // Choose the icon based on the password visibility
+                        _isObscured ? Icons.visibility_off : Icons.visibility,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          _isObscured = !_isObscured;
+                        });
+                      },
+                    )
+                  : null,
             ),
-            suffixIcon: widget.isPassword
-                ? IconButton(
-                    icon: Icon(
-                      // Choose the icon based on the password visibility
-                      _isObscured ? Icons.visibility_off : Icons.visibility,
-                    ),
-                    onPressed: () {
-                      setState(() {
-                        _isObscured = !_isObscured;
-                      });
-                    },
-                  )
-                : null,
+            onChanged: widget.onChanged,
+            onSubmitted: widget.onSubmitted,
           ),
-          onChanged: widget.onChanged,
-          onSubmitted: widget.onSubmitted,
         ),
       ],
     );
