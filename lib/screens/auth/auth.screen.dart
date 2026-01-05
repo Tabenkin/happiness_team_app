@@ -1,21 +1,25 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:auto_route/auto_route.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:happiness_team_app/components/win_list/win_content.widget.dart';
 import 'package:happiness_team_app/happiness_theme.dart';
+import 'package:happiness_team_app/helpers/dialog.helpers.dart';
 import 'package:happiness_team_app/models/app_user.model.dart';
+import 'package:happiness_team_app/models/win.model.dart';
 import 'package:happiness_team_app/providers/app.provider.dart';
 import 'package:happiness_team_app/providers/user.provider.dart';
+import 'package:happiness_team_app/providers/wins.provider.dart';
 import 'package:happiness_team_app/router/happiness_router.gr.dart';
+import 'package:happiness_team_app/services/wins.service.dart';
 import 'package:happiness_team_app/widgets/apple_signin_button.widget.dart';
 import 'package:happiness_team_app/widgets/google_signin_button.widget.dart';
 import 'package:happiness_team_app/widgets/my_button.widget.dart';
 import 'package:happiness_team_app/widgets/my_text.widget.dart';
 import 'package:happiness_team_app/widgets/my_text_input.widget.dart';
 import 'package:provider/provider.dart';
-import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
 @RoutePage()
 class AuthScreen extends StatefulWidget {
@@ -82,16 +86,14 @@ class _AuthScreenState extends State<AuthScreen> {
 
     try {
       if (_isLogin) {
-        var userCredential =
-            await FirebaseAuth.instance.signInWithEmailAndPassword(
+        var userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
           email: _email,
           password: _password,
         );
 
         _onSuccess(false, userCredential.user);
       } else {
-        var userCredential =
-            await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        var userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
           email: _email,
           password: _password,
         );
@@ -172,11 +174,53 @@ class _AuthScreenState extends State<AuthScreen> {
     });
   }
 
+  StreamSubscription? _viewSharedWinTriggerSubscription;
+
   @override
   void initState() {
+    print("AuthScreen initState");
     _userProvider = Provider.of<UserProvider>(context, listen: false);
     _appProvider = Provider.of<AppProvider>(context, listen: false);
+
+
+    _viewSharedWinTriggerSubscription?.cancel();
+
+    _viewSharedWinTriggerSubscription = Provider.of<WinsProvider>(context, listen: false)
+        .streamViewSharedWinTriggers
+        .listen((winId) async {
+      if (winId == null) return;
+
+      // Consume the event immediately so it doesn't trigger again on rebuilds
+      Provider.of<WinsProvider>(context, listen: false).clearViewSharedWinEvents();
+
+      // Await 100 ms
+      await Future.delayed(const Duration(milliseconds: 100));
+
+      if (!mounted) return;
+
+      DialogHelper.showBottomSheetModal(
+        context,
+        child: FutureBuilder(
+            future: WinsService.fetchSharedWin(winId),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(child: CircularProgressIndicator());
+              }
+
+              var win = snapshot.data as Win;
+
+              return WinContent(win: win);
+            }),
+      );
+    });
+
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    _viewSharedWinTriggerSubscription?.cancel();
+    super.dispose();
   }
 
   @override
@@ -249,8 +293,7 @@ class _AuthScreenState extends State<AuthScreen> {
                           opacity: _isLogin ? 0 : 1,
                           child: Container(
                             height: _isLogin ? 0 : null,
-                            margin:
-                                EdgeInsets.only(bottom: _isLogin ? 0 : 16.0),
+                            margin: EdgeInsets.only(bottom: _isLogin ? 0 : 16.0),
                             child: MyTextInput(
                               labelText: "Confirm Password",
                               isPassword: true,
@@ -267,18 +310,14 @@ class _AuthScreenState extends State<AuthScreen> {
                         children: [
                           TextButton(
                             onPressed: () {
-                              context.router
-                                  .navigate(const ResetPasswordRoute());
+                              context.router.navigate(const ResetPasswordRoute());
                             },
                             child: MyText(
                               "Forgot Password?",
                               style: Theme.of(context)
                                   .textTheme
                                   .bodyMedium!
-                                  .copyWith(
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .primary),
+                                  .copyWith(color: Theme.of(context).colorScheme.primary),
                             ),
                           ),
                         ],
@@ -315,10 +354,7 @@ class _AuthScreenState extends State<AuthScreen> {
                               style: Theme.of(context)
                                   .textTheme
                                   .bodyMedium!
-                                  .copyWith(
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .primary),
+                                  .copyWith(color: Theme.of(context).colorScheme.primary),
                             ),
                           ),
                         ],
@@ -343,10 +379,8 @@ class _AuthScreenState extends State<AuthScreen> {
                               child: MyText(
                                 "Or",
                                 textAlign: TextAlign.center,
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .bodyMedium!
-                                    .copyWith(height: 1.0),
+                                style:
+                                    Theme.of(context).textTheme.bodyMedium!.copyWith(height: 1.0),
                               ),
                             ),
                             SizedBox(

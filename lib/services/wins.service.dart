@@ -17,4 +17,9 @@ class WinsService {
       }).toList();
     });
   }
+
+  static fetchSharedWin(String winId) async {
+    var snapshot = await FirebaseFirestore.instance.collection("/sharedWins").doc(winId).get();
+    return Win.fromMap(fromSnapshot(snapshot));
+  }
 }

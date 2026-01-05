@@ -52,8 +52,7 @@ class Win {
   String get formattedDate {
     const ordinals = ["th", "st", "nd", "rd"];
     int day = date.day;
-    String ordinal =
-        ordinals[(day < 20 && day > 3) ? 0 : (day % 10 < 4 ? day % 10 : 0)];
+    String ordinal = ordinals[(day < 20 && day > 3) ? 0 : (day % 10 < 4 ? day % 10 : 0)];
 
     String formattedDate = DateFormat('MMMM d').format(date); // "February 2"
     return "$formattedDate$ordinal ${date.year}"; // "February 2nd 2024"
@@ -66,12 +65,25 @@ class Win {
     return null;
   }
 
+  Future<Win> saveAsShaedWind() async {
+    var basePath = "/sharedWins";
+
+    // Generate an id
+    var newId = FirebaseFirestore.instance.collection(basePath).doc().id;
+
+    await FirebaseFirestore.instance.collection(basePath).doc(newId).set(toMap());
+
+    // return a copy of the win with the new id
+    var winCopy = Win.fromMap(toMap());
+    winCopy.id = newId;
+    return winCopy;
+  }
+
   save() async {
     var basePath = "/users/$userId/wins";
 
     if (id == null) {
-      var response =
-          await FirebaseFirestore.instance.collection(basePath).add(toMap());
+      var response = await FirebaseFirestore.instance.collection(basePath).add(toMap());
       id = response.id;
     } else {
       await FirebaseFirestore.instance.doc('$basePath/$id').update(toMap());

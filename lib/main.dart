@@ -17,8 +17,8 @@ import 'package:oktoast/oktoast.dart';
 import 'package:provider/provider.dart';
 
 void main() async {
-  WidgetsBinding widgetsBinding = WidgetsFlutterBinding
-      .ensureInitialized(); // Ensure plugin services are initialized
+  WidgetsBinding widgetsBinding =
+      WidgetsFlutterBinding.ensureInitialized(); // Ensure plugin services are initialized
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
 
   await Firebase.initializeApp(
@@ -46,7 +46,7 @@ class _MyAppState extends State<MyApp> {
   late UserProvider _userProvider;
   late AuthStateProvider _authProvider;
   late AppProvider _appProvider;
-  
+
   RemoteMessage? _pendingMessage;
 
   @override
@@ -72,21 +72,20 @@ class _MyAppState extends State<MyApp> {
     _checkInitialMessages();
 
     FlutterBranchSdk.listSession().listen((data) {
-      print("Branch link clicked. $data");
-
-      if (data.containsKey("+clicked_branch_link") &&
-          data["+clicked_branch_link"] == true) {
+      if (data.containsKey("+clicked_branch_link") && data["+clicked_branch_link"] == true) {
         var event = data["event"];
 
         if (event == null) return;
 
         if (event == "addWin") {
           _openAddWin();
+        } else if (event == "view_shared_win" && data.containsKey("winId")) {
+          _openViewWin(data["winId"].toString(), isShared: true);
         }
       }
-    }, onError: (error) {
-      print('listSession error: ${error.toString()}');
-    });
+    }, onError: (error) {});
+
+    // Listen for hwen the app comes back into view from the background
 
     super.initState();
   }
@@ -103,8 +102,7 @@ class _MyAppState extends State<MyApp> {
   _handleMessage(RemoteMessage message) {
     if (message.data['event'] == null) return;
 
-    if (message.data['event'] == 'randomWinReminder' &&
-        message.data['winId'] != null) {
+    if (message.data['event'] == 'randomWinReminder' && message.data['winId'] != null) {
       Future.delayed(const Duration(milliseconds: 100), () {
         _appRouter.navigate(const HomeRoute());
         _winsProvider.triggerRandomWin(message.data['winId']);
@@ -120,6 +118,17 @@ class _MyAppState extends State<MyApp> {
     Future.delayed(const Duration(milliseconds: 100), () {
       _appRouter.navigate(const HomeRoute());
       _winsProvider.triggerAddWin();
+    });
+  }
+
+  _openViewWin(String winId, {bool isShared = false}) {
+    Future.delayed(const Duration(milliseconds: 100), () {
+      _appRouter.navigate(const HomeRoute());
+      if (isShared) {
+        _winsProvider.triggerViewSharedWin(winId);
+      } else {
+        _winsProvider.triggerRandomWin(winId);
+      }
     });
   }
 
@@ -148,7 +157,7 @@ class _MyAppState extends State<MyApp> {
             }
 
             FlutterNativeSplash.remove();
-            
+
             // Handle pending message after app initialization
             if (_pendingMessage != null) {
               final message = _pendingMessage;

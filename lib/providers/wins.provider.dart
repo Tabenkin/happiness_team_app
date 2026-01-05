@@ -17,6 +17,7 @@ class WinsProvider with ChangeNotifier {
   final ValueNotifier<int> _selectedTab = ValueNotifier(0);
 
   final StreamController<String?> _triggerRandomWin = BehaviorSubject();
+  final StreamController<String?> _triggerViewSharedWin = BehaviorSubject();
   final StreamController<String?> _triggerAddWin = BehaviorSubject();
 
   initializeWins() {
@@ -135,6 +136,7 @@ class WinsProvider with ChangeNotifier {
   }
 
   Stream<String?> get streamRandomWinTriggers => _triggerRandomWin.stream;
+  Stream<String?> get streamViewSharedWinTriggers => _triggerViewSharedWin.stream;
 
   triggerRandomWin(String winId) {
     _triggerRandomWin.add(winId);
@@ -142,6 +144,14 @@ class WinsProvider with ChangeNotifier {
 
   clearRandomWinEvents() {
     _triggerRandomWin.add(null);
+  }
+
+  triggerViewSharedWin(String winId) {
+    _triggerViewSharedWin.add(winId);
+  }
+
+  clearViewSharedWinEvents() {
+    _triggerViewSharedWin.add(null);
   }
 
   Stream<String?> get streamAddWinTriggers => _triggerAddWin.stream;

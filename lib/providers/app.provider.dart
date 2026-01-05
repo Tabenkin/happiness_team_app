@@ -15,7 +15,7 @@ class AppProvider with ChangeNotifier {
   bool _isInitialized = false;
   bool _initilizationError = false;
 
-  final String _appVersion = "v1.2.0";
+  final String _appVersion = "v1.4.0";
 
   AppProvider({
     required WinsProvider winsProvider,

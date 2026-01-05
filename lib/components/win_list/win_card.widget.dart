@@ -9,6 +9,7 @@ import 'package:happiness_team_app/components/win_list/win_photo_gallery.widget.
 import 'package:happiness_team_app/happiness_theme.dart';
 import 'package:happiness_team_app/helpers/dialog.helpers.dart';
 import 'package:happiness_team_app/models/win.model.dart';
+import 'package:happiness_team_app/services/deep-link.service.dart';
 import 'package:happiness_team_app/widgets/Base/base_text.widget.dart';
 import 'package:happiness_team_app/widgets/image_full_screen_wrapper.widget.dart';
 import 'package:share_plus/share_plus.dart';
@@ -34,8 +35,12 @@ class _WinCardState extends State<WinCard> {
   _shareWin() async {
     final box = context.findRenderObject() as RenderBox?;
 
+    var sharedWin = await widget.win.saveAsShaedWind();
+
+    var deepLink = await DeepLinkService.createDeepLink(sharedWin);
+
     await Share.share(
-      "Check out my win from ${widget.win.formattedDate}!\n\n${widget.win.notes}\n\nI recorded this awesome win using the Happiness Team app. You should try it out. Here’s a link:\n\nhttps://sfbyw.app.link/SkTrc6ajZHb",
+      "Check out my win from ${widget.win.formattedDate}!\n\n${widget.win.notes}\n\nI recorded this awesome win using the Happiness Team app. Check out my win there and try it for yourself. Here’s a link:\n\n$deepLink",
       subject: "Check out my win!",
       sharePositionOrigin: box!.localToGlobal(Offset.zero) & box.size,
     );
