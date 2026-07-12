@@ -50,10 +50,7 @@ class UploadButton extends StatefulWidget {
 }
 
 class _UploadButtonState extends State<UploadButton> {
-  var invalidPermissionStatuses = [
-    PermissionStatus.denied,
-    PermissionStatus.permanentlyDenied
-  ];
+  var invalidPermissionStatuses = [PermissionStatus.denied, PermissionStatus.permanentlyDenied];
 
   List<String> supportedFileTypes = [];
 
@@ -167,8 +164,7 @@ class _UploadButtonState extends State<UploadButton> {
 
         if (widget.fileType == FileType.video) {
           var response = await picker.pickVideo(
-              source: ImageSource.gallery,
-              maxDuration: const Duration(seconds: 60));
+              source: ImageSource.gallery, maxDuration: const Duration(seconds: 60));
 
           if (response != null) {
             images.add(response);
